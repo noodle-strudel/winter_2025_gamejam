@@ -1,3 +1,10 @@
-[gd_scene format=3 uid="uid://dlnhwsdvfjlg7"]
+[gd_scene load_steps=2 format=3 uid="uid://dlnhwsdvfjlg7"]
+
+[ext_resource type="Texture2D" uid="uid://cyhp88pl1x861" path="res://sprites/player.png" id="1_udfe8"]
 
 [node name="Level1" type="Node2D"]
+
+[node name="Player" type="Sprite2D" parent="."]
+position = Vector2(32, 328)
+scale = Vector2(2, 2)
+texture = ExtResource("1_udfe8")
