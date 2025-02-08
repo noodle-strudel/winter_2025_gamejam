@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://cw7cwr4lfsvse"]
+
+[ext_resource type="Script" path="res://scenes/mum.gd" id="1_7ljp4"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hkcyo"]
+
+[node name="Mum" type="CharacterBody2D"]
+collision_mask = 2
+script = ExtResource("1_7ljp4")
+
+[node name="BodyCollision" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_hkcyo")
+
+[node name="Polygon2D" type="Polygon2D" parent="."]
+color = Color(0.0440996, 0.594987, 0.0360191, 1)
+polygon = PackedVector2Array(0, -8, -8, 0, 0, 8, 8, 0)
