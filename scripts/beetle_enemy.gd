@@ -36,7 +36,7 @@ func move(delta) -> void:
 		elif is_chasing_player and not taking_damage:
 			var dir_to_player = position.direction_to(player.position) * speed
 			direction = Vector2.LEFT if direction.x < 0 else Vector2.RIGHT
-			velocity.x = move_toward(velocity.x, dir_to_player.x, 1 )
+			velocity.x = move_toward(velocity.x, dir_to_player.x, 1)
 		is_moving = true
 	else:
 		velocity.x = 0

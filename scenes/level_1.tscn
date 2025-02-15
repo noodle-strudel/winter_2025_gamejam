@@ -10,7 +10,6 @@ size = Vector2(320, 16)
 [node name="Level1" type="Node2D"]
 
 [node name="Mum" parent="." instance=ExtResource("1_gt3vi")]
-position = Vector2(-32, 0)
 
 [node name="TESTPLATFORM" type="StaticBody2D" parent="."]
 position = Vector2(72, 328)
@@ -42,4 +41,4 @@ polygon = PackedVector2Array(-199.111, -8, 256, -8, 256, 8, -199.111, 8)
 position = Vector2(672, 112)
 
 [node name="FlyEnemy" parent="." instance=ExtResource("3_170ti")]
-position = Vector2(328, 72)
+position = Vector2(296, 64)
