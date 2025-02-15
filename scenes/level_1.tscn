@@ -8,7 +8,7 @@ size = Vector2(512, 16)
 [node name="Level1" type="Node2D"]
 
 [node name="Mum" parent="." instance=ExtResource("1_gt3vi")]
-position = Vector2(320, 0)
+position = Vector2(329, 40)
 
 [node name="TESTPLATFORM" type="StaticBody2D" parent="."]
 position = Vector2(320, 320)
