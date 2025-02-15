@@ -7,10 +7,11 @@
 size = Vector2(64, 64)
 
 [node name="Mum" type="CharacterBody2D"]
-collision_mask = 2
+collision_mask = 6
 script = ExtResource("1_7ljp4")
 
 [node name="BodyCollision" type="CollisionShape2D" parent="."]
+position = Vector2(0, -32)
 shape = SubResource("RectangleShape2D_hkcyo")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
