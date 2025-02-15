@@ -1,22 +1,44 @@
-[gd_scene load_steps=3 format=3 uid="uid://dlnhwsdvfjlg7"]
+[gd_scene load_steps=5 format=3 uid="uid://dlnhwsdvfjlg7"]
 
 [ext_resource type="PackedScene" uid="uid://cw7cwr4lfsvse" path="res://scenes/mum.tscn" id="1_gt3vi"]
+[ext_resource type="PackedScene" uid="uid://cm2ivsqmkkqlk" path="res://scenes/beetle_enemy.tscn" id="2_ok7bk"]
+[ext_resource type="PackedScene" uid="uid://bbfixdd0dm6cd" path="res://scenes/fly_enemy.tscn" id="3_170ti"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ikw6r"]
-size = Vector2(512, 16)
+size = Vector2(320, 16)
 
 [node name="Level1" type="Node2D"]
 
 [node name="Mum" parent="." instance=ExtResource("1_gt3vi")]
-position = Vector2(320, 0)
 
 [node name="TESTPLATFORM" type="StaticBody2D" parent="."]
-position = Vector2(320, 320)
-collision_layer = 2
+position = Vector2(72, 328)
+collision_layer = 4
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TESTPLATFORM"]
 shape = SubResource("RectangleShape2D_ikw6r")
 
 [node name="Polygon2D" type="Polygon2D" parent="TESTPLATFORM"]
-polygon = PackedVector2Array(-256, -8, 256, -8, 256, 8, -256, 8)
+position = Vector2(-20, 0)
+scale = Vector2(0.703125, 1)
+polygon = PackedVector2Array(-199.111, -8, 256, -8, 256, 8, -199.111, 8)
+
+[node name="TESTPLATFORM2" type="StaticBody2D" parent="."]
+position = Vector2(656, 328)
+collision_layer = 4
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TESTPLATFORM2"]
+shape = SubResource("RectangleShape2D_ikw6r")
+
+[node name="Polygon2D" type="Polygon2D" parent="TESTPLATFORM2"]
+position = Vector2(-20, 0)
+scale = Vector2(0.703125, 1)
+polygon = PackedVector2Array(-199.111, -8, 256, -8, 256, 8, -199.111, 8)
+
+[node name="BeetleEnemy" parent="." instance=ExtResource("2_ok7bk")]
+position = Vector2(672, 112)
+
+[node name="FlyEnemy" parent="." instance=ExtResource("3_170ti")]
+position = Vector2(296, 64)

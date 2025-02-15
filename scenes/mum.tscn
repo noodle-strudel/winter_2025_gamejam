@@ -1,16 +1,20 @@
-[gd_scene load_steps=3 format=3 uid="uid://cw7cwr4lfsvse"]
+[gd_scene load_steps=4 format=3 uid="uid://cw7cwr4lfsvse"]
 
 [ext_resource type="Script" path="res://scenes/mum.gd" id="1_7ljp4"]
+[ext_resource type="Texture2D" uid="uid://ben8hdhrrhc2a" path="res://sprites/frog.png" id="2_m7s8v"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hkcyo"]
+size = Vector2(64, 64)
 
 [node name="Mum" type="CharacterBody2D"]
-collision_mask = 2
+collision_mask = 6
 script = ExtResource("1_7ljp4")
 
 [node name="BodyCollision" type="CollisionShape2D" parent="."]
+position = Vector2(0, -32)
 shape = SubResource("RectangleShape2D_hkcyo")
 
-[node name="Polygon2D" type="Polygon2D" parent="."]
-color = Color(0.0440996, 0.594987, 0.0360191, 1)
-polygon = PackedVector2Array(0, -8, -8, 0, 0, 8, 8, 0)
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -32)
+texture = ExtResource("2_m7s8v")
+hframes = 16
