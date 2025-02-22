@@ -1,14 +1,15 @@
 [gd_scene load_steps=6 format=4 uid="uid://dlnhwsdvfjlg7"]
 
-[ext_resource type="Texture2D" uid="uid://cxgwu7os0ugom" path="res://sprites/bg.png" id="1_fa5f3"]
+[ext_resource type="Texture2D" uid="uid://dnwq5k7lam3ea" path="res://sprites/bg.png" id="1_fa5f3"]
 [ext_resource type="PackedScene" uid="uid://cw7cwr4lfsvse" path="res://scenes/mum.tscn" id="1_gt3vi"]
 [ext_resource type="PackedScene" uid="uid://cm2ivsqmkkqlk" path="res://scenes/beetle_enemy.tscn" id="2_ok7bk"]
-[ext_resource type="PackedScene" uid="uid://clc7miv2f5jse" path="res://scenes/fly_enemy.tscn" id="3_170ti"]
+[ext_resource type="PackedScene" uid="uid://bbfixdd0dm6cd" path="res://scenes/fly_enemy.tscn" id="3_170ti"]
 [ext_resource type="TileSet" uid="uid://coh6k1wo8sh15" path="res://stone_brick_tiles.tres" id="4_7v7kb"]
 
 [node name="Level1" type="Node2D"]
 
 [node name="BG" type="Sprite2D" parent="."]
+scale = Vector2(2, 2)
 texture = ExtResource("1_fa5f3")
 centered = false
 metadata/_edit_lock_ = true
