@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://bbfixdd0dm6cd"]
+[gd_scene load_steps=6 format=3 uid="uid://bbfixdd0dm6cd"]
 
 [ext_resource type="Script" path="res://scenes/fly_enemy.gd" id="1_oks2l"]
 
@@ -8,9 +8,17 @@ radius = 24.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_3jerm"]
 radius = 192.167
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_0kwx3"]
+radius = 32.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_aibc0"]
+radius = 32.0
+
 [node name="FlyEnemy" type="CharacterBody2D"]
-motion_mode = 1
+collision_layer = 2
+collision_mask = 5
 script = ExtResource("1_oks2l")
+health = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_g274v")
@@ -30,5 +38,17 @@ polygon = PackedVector2Array(-16, 0, -24, 8, -16, 16, 16, 16, 24, 8, 16, 0)
 shape = SubResource("CircleShape2D_3jerm")
 debug_color = Color(0.871882, 0.301979, 0.456727, 0.42)
 
+[node name="Hurtbox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource("CircleShape2D_0kwx3")
+
+[node name="EdibleBox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EdibleBox"]
+shape = SubResource("CircleShape2D_aibc0")
+debug_color = Color(4.81308e-06, 0.62953, 0.481674, 0.42)
+
 [connection signal="body_entered" from="EntityDetector" to="." method="_on_entity_detector_body_entered"]
 [connection signal="body_exited" from="EntityDetector" to="." method="_on_entity_detector_body_exited"]
+[connection signal="area_entered" from="Hurtbox" to="." method="_on_hurtbox_area_entered"]

@@ -6,13 +6,15 @@ func _ready() -> void:
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta: float) -> void:
-	
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 		velocity.x = 0
-	else:
+	elif not edible:
 		move(delta)
-		
+	else:
+		defeat(delta)
+	
+	handle_animation(delta)
 	move_and_slide()
 
 func move(delta) -> void:
@@ -29,17 +31,41 @@ func move(delta) -> void:
 				query.exclude = [self]
 			var result = space_state.intersect_ray(query)
 			
-			if not result:
+			if not result or is_on_wall():
 				direction = Vector2.LEFT if direction == Vector2.RIGHT else Vector2.RIGHT
+			
 			velocity.x = move_toward(velocity.x, speed * direction.x, 5)
 			
 		elif is_chasing_player and not taking_damage:
 			var dir_to_player = position.direction_to(player.position) * speed
 			direction = Vector2.LEFT if direction.x < 0 else Vector2.RIGHT
 			velocity.x = move_toward(velocity.x, dir_to_player.x, 1)
+		else:
+			var knockback_dir = position.direction_to(player.position) * knockback_force
+			velocity.x = knockback_dir.x
 		is_moving = true
 	else:
 		velocity.x = 0
+
+func defeat(delta):
+	set_collision_layer_value(2, false)
+	$EdibleBox.monitorable = true
+	# for debugging purposes
+	$EdibleBox.show()
+
+func handle_animation(delta):
+	if not dead and not taking_damage and not is_attacking:
+		# Play walking animation dependent on direction
+		pass
+	elif not dead and taking_damage and not is_attacking:
+		# Play hurt animation
+		await get_tree().create_timer(1).timeout
+		taking_damage = false
+	elif dead and is_moving:
+		is_moving = false
+		$Polygon2D.scale *= -1
+		await get_tree().create_timer(1).timeout
+		edible = true
 
 
 func _on_entity_detector_body_entered(body: Node2D) -> void:
@@ -47,8 +73,11 @@ func _on_entity_detector_body_entered(body: Node2D) -> void:
 		player = body
 		is_chasing_player = true
 
-
 func _on_entity_detector_body_exited(body: Node2D) -> void:
 	if body.name == "Mum":
 		player = null
 		is_chasing_player = false
+
+func _on_hurtbox_area_entered(area: Area2D) -> void:
+	if area.name == "MumTongue":
+		take_damage()

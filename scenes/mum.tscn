@@ -1,20 +1,51 @@
-[gd_scene load_steps=4 format=3 uid="uid://cw7cwr4lfsvse"]
+[gd_scene load_steps=6 format=3 uid="uid://cw7cwr4lfsvse"]
 
 [ext_resource type="Script" path="res://scenes/mum.gd" id="1_7ljp4"]
 [ext_resource type="Texture2D" uid="uid://ben8hdhrrhc2a" path="res://sprites/frog.png" id="2_m7s8v"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hkcyo"]
-size = Vector2(64, 64)
+size = Vector2(64, 56)
+
+[sub_resource type="Curve2D" id="Curve2D_gbwyh"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 16, -32, 0, 0, 0, 0, 128, -32, 0, 0, 0, 0, 16, -32)
+}
+point_count = 3
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_8oy6e"]
 
 [node name="Mum" type="CharacterBody2D"]
 collision_mask = 6
 script = ExtResource("1_7ljp4")
 
 [node name="BodyCollision" type="CollisionShape2D" parent="."]
-position = Vector2(0, -32)
+position = Vector2(0, -28)
 shape = SubResource("RectangleShape2D_hkcyo")
+
+[node name="TonguePath" type="Path2D" parent="."]
+curve = SubResource("Curve2D_gbwyh")
+
+[node name="TonguePathFollower" type="PathFollow2D" parent="TonguePath"]
+position = Vector2(16, -32)
+
+[node name="MumTongue" type="Area2D" parent="TonguePath/TonguePathFollower"]
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TonguePath/TonguePathFollower/MumTongue"]
+shape = SubResource("CircleShape2D_8oy6e")
+
+[node name="Polygon2D" type="Polygon2D" parent="TonguePath/TonguePathFollower/MumTongue"]
+position = Vector2(0, -1.90735e-06)
+scale = Vector2(0.884615, 0.913043)
+color = Color(0.914065, 0.281827, 0.232554, 1)
+polygon = PackedVector2Array(-7.91304, -7.66667, -11.3043, 0, -7.91304, 7.66667, 0, 10.9524, 7.91304, 7.66667, 11.3043, 0, 7.91304, -7.66667, 0, -11)
+
+[node name="RemoteTransform2D" type="RemoteTransform2D" parent="TonguePath/TonguePathFollower"]
+remote_path = NodePath("../MumTongue/CollisionShape2D")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(0, -32)
 texture = ExtResource("2_m7s8v")
 hframes = 16
+
+[connection signal="area_entered" from="TonguePath/TonguePathFollower/MumTongue" to="." method="_on_mum_tongue_area_entered"]

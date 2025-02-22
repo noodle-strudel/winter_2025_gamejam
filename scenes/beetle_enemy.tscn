@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://cm2ivsqmkkqlk"]
+[gd_scene load_steps=6 format=3 uid="uid://cm2ivsqmkkqlk"]
 
 [ext_resource type="Script" path="res://scripts/beetle_enemy.gd" id="1_stwso"]
 
@@ -8,10 +8,17 @@ size = Vector2(96, 18)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dludg"]
 size = Vector2(384, 106)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_o4ob2"]
+size = Vector2(112, 66)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nbqvg"]
+size = Vector2(112, 34)
+
 [node name="BeetleEnemy" type="CharacterBody2D"]
 collision_layer = 2
 collision_mask = 5
 script = ExtResource("1_stwso")
+health = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -1)
@@ -37,5 +44,21 @@ position = Vector2(0, -43)
 shape = SubResource("RectangleShape2D_dludg")
 debug_color = Color(0.805342, 0.379349, 0.459398, 0.42)
 
+[node name="Hurtbox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0, -23)
+shape = SubResource("RectangleShape2D_o4ob2")
+
+[node name="EdibleBox" type="Area2D" parent="."]
+visible = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EdibleBox"]
+position = Vector2(0, -7)
+shape = SubResource("RectangleShape2D_nbqvg")
+debug_color = Color(0.365439, 0.608379, 0.290536, 0.42)
+
 [connection signal="body_entered" from="EntityDetector" to="." method="_on_entity_detector_body_entered"]
 [connection signal="body_exited" from="EntityDetector" to="." method="_on_entity_detector_body_exited"]
+[connection signal="area_entered" from="Hurtbox" to="." method="_on_hurtbox_area_entered"]
