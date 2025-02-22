@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://bbfixdd0dm6cd"]
+[gd_scene load_steps=4 format=3 uid="uid://clc7miv2f5jse"]
 
 [ext_resource type="Script" path="res://scenes/fly_enemy.gd" id="1_oks2l"]
 
@@ -9,6 +9,8 @@ radius = 24.0
 radius = 192.167
 
 [node name="FlyEnemy" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 5
 motion_mode = 1
 script = ExtResource("1_oks2l")
 
