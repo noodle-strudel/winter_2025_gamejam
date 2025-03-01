@@ -27,7 +27,7 @@ shape = SubResource("RectangleShape2D_55xhr")
 [node name="Polygon2D" type="Polygon2D" parent="."]
 position = Vector2(0, -16)
 scale = Vector2(1.42017, 1)
-color = Color(0, 0, 0, 1)
+color = Color(0, 0.741176, 0.756863, 1)
 polygon = PackedVector2Array(-27.6923, -16, -33.2308, -8, -33.2308, 0, -33.2308, 8, -20.9231, 8, -20.9231, 24, -15.3846, 8, -9.84615, 24, -9.84615, 8, -4.30769, 8, -4.30769, 24, 1.23077, 8, 6.76923, 24, 6.76923, 8, 12.3077, 8, 12.3077, 24, 17.8462, 8, 23.3846, 24, 23.3846, 8, 34.3669, 8, 34.3669, -8, 22.1538, -16, 40, -40, 0, -40, -16.6154, -16)
 
 [node name="PlatformGuideL" type="Marker2D" parent="."]

@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://cw7cwr4lfsvse"]
+[gd_scene load_steps=8 format=3 uid="uid://cw7cwr4lfsvse"]
 
 [ext_resource type="Script" path="res://scenes/mum.gd" id="1_7ljp4"]
 [ext_resource type="Texture2D" uid="uid://ben8hdhrrhc2a" path="res://sprites/frog.png" id="2_m7s8v"]
@@ -13,6 +13,12 @@ _data = {
 point_count = 3
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_8oy6e"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dsei6"]
+bg_color = Color(0.758192, 0.758192, 0.758192, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oq85g"]
+bg_color = Color(0.795979, 0.543539, 0.0188896, 1)
 
 [node name="Mum" type="CharacterBody2D"]
 collision_mask = 6
@@ -48,4 +54,31 @@ position = Vector2(0, -32)
 texture = ExtResource("2_m7s8v")
 hframes = 16
 
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 32.0
+offset_top = -56.0
+offset_right = 40.0
+
+[node name="StaminaBar" type="ProgressBar" parent="UI"]
+layout_mode = 1
+anchors_preset = 13
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -2.0
+offset_right = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_dsei6")
+theme_override_styles/fill = SubResource("StyleBoxFlat_oq85g")
+value = 100.0
+fill_mode = 3
+show_percentage = false
+
+[node name="StaminaCooldown" type="Timer" parent="."]
+wait_time = 3.0
+
 [connection signal="area_entered" from="TonguePath/TonguePathFollower/MumTongue" to="." method="_on_mum_tongue_area_entered"]
+[connection signal="timeout" from="StaminaCooldown" to="." method="_on_stamina_cooldown_timeout"]
