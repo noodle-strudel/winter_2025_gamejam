@@ -80,5 +80,7 @@ show_percentage = false
 [node name="StaminaCooldown" type="Timer" parent="."]
 wait_time = 3.0
 
+[node name="Camera2D" type="Camera2D" parent="."]
+
 [connection signal="area_entered" from="TonguePath/TonguePathFollower/MumTongue" to="." method="_on_mum_tongue_area_entered"]
 [connection signal="timeout" from="StaminaCooldown" to="." method="_on_stamina_cooldown_timeout"]
