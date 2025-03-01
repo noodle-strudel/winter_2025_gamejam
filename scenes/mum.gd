@@ -12,6 +12,7 @@ var stamina: float = 100.0
 var empty_stamina: bool = false
 var full_stamina: bool = true
 
+@export var effective_size = Vector2(64, 64)
 
 # Possible states for the player
 enum STATE {
