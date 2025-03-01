@@ -48,6 +48,7 @@ func _physics_process(delta: float) -> void:
 func normal_state(delta: float) -> void:
 	if Input.is_action_just_pressed("attack"):
 		$TonguePath/TonguePathFollower/MumTongue.monitorable = true
+		$TongueSound.play()
 		state = STATE.ATTACK
 		return
 	
