@@ -12,7 +12,7 @@ signal player_defeated
 
 @export var SPEED = 300.0
 @export var CLIMB_SPEED = 100.0
-@export var JUMP_VELOCITY = -500.0
+@export var JUMP_VELOCITY = -600.0
 @export var GRAVITY = 1500
 
 @export var effective_size = Vector2(64, 64)
@@ -146,6 +146,15 @@ func climb_state(_delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 		velocity.y = move_toward(velocity.y, 0, SPEED)
 	move_and_slide()
+	
+	# Handle jump. (make sure to add a directional aspect, so user jumps OFF of wall)
+	if Input.is_action_just_pressed("jump"):
+		velocity.y = JUMP_VELOCITY
+		state = STATE.NORMAL
+		
+		return
+		
+	
 
 # Manages stamina and stanima bar
 func manage_stamina():
