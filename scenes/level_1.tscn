@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=4 uid="uid://dlnhwsdvfjlg7"]
+[gd_scene load_steps=8 format=4 uid="uid://dlnhwsdvfjlg7"]
 
 [ext_resource type="Texture2D" uid="uid://dnwq5k7lam3ea" path="res://sprites/bg.png" id="1_fa5f3"]
 [ext_resource type="PackedScene" uid="uid://cw7cwr4lfsvse" path="res://scenes/mum.tscn" id="1_gt3vi"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://bbfixdd0dm6cd" path="res://scenes/fly_enemy.tscn" id="3_170ti"]
 [ext_resource type="TileSet" uid="uid://coh6k1wo8sh15" path="res://stone_brick_tiles.tres" id="4_7v7kb"]
 [ext_resource type="Script" path="res://scripts/cam_zone_manager.gd" id="6_xutvh"]
+[ext_resource type="AudioStream" uid="uid://ckhkbjri60iki" path="res://sound/music.wav" id="7_kvnqo"]
 
 [node name="Level1" type="Node2D"]
 
@@ -19,7 +20,7 @@ position = Vector2(125, 268)
 debug = false
 
 [node name="BeetleEnemy" parent="." instance=ExtResource("2_ok7bk")]
-position = Vector2(617, -214)
+position = Vector2(774, 230)
 
 [node name="FlyEnemy" parent="." instance=ExtResource("3_170ti")]
 position = Vector2(140, -241)
@@ -31,3 +32,8 @@ tile_set = ExtResource("4_7v7kb")
 [node name="CamZoneManager" type="Node2D" parent="."]
 script = ExtResource("6_xutvh")
 zones = [Rect2i(0, 0, 640, 360), Rect2i(640, 0, 640, 360), Rect2i(640, -360, 640, 360)]
+
+[node name="BGM" type="AudioStreamPlayer2D" parent="."]
+process_mode = 3
+stream = ExtResource("7_kvnqo")
+autoplay = true

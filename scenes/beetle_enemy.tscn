@@ -1,15 +1,17 @@
-[gd_scene load_steps=6 format=3 uid="uid://cm2ivsqmkkqlk"]
+[gd_scene load_steps=7 format=3 uid="uid://cm2ivsqmkkqlk"]
 
 [ext_resource type="Script" path="res://scripts/beetle_enemy.gd" id="1_stwso"]
+[ext_resource type="Texture2D" uid="uid://chj2e66gwe5ov" path="res://sprites/beetle.png" id="2_m6yt3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_55xhr"]
-size = Vector2(96, 18)
+size = Vector2(104, 56)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dludg"]
 size = Vector2(384, 106)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_o4ob2"]
-size = Vector2(112, 66)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_m6o4o"]
+radius = 29.0
+height = 136.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nbqvg"]
 size = Vector2(112, 34)
@@ -20,11 +22,16 @@ collision_mask = 5
 script = ExtResource("1_stwso")
 health = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -1)
+[node name="Beetle" type="Sprite2D" parent="."]
+position = Vector2(5, -21)
+texture = ExtResource("2_m6yt3")
+
+[node name="Hitbox" type="CollisionShape2D" parent="."]
+position = Vector2(2, -20)
 shape = SubResource("RectangleShape2D_55xhr")
 
 [node name="Polygon2D" type="Polygon2D" parent="."]
+visible = false
 position = Vector2(0, -16)
 scale = Vector2(1.42017, 1)
 color = Color(0, 0.741176, 0.756863, 1)
@@ -43,12 +50,15 @@ collision_layer = 0
 position = Vector2(0, -43)
 shape = SubResource("RectangleShape2D_dludg")
 debug_color = Color(0.805342, 0.379349, 0.459398, 0.42)
+metadata/_edit_lock_ = true
 
 [node name="Hurtbox" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
-position = Vector2(0, -23)
-shape = SubResource("RectangleShape2D_o4ob2")
+position = Vector2(5, -20)
+rotation = 1.5708
+shape = SubResource("CapsuleShape2D_m6o4o")
+metadata/_edit_lock_ = true
 
 [node name="EdibleBox" type="Area2D" parent="."]
 visible = false
