@@ -1,23 +1,32 @@
 extends CharacterBody2D
 
+signal create_grapple
+signal player_take_damage(int)
+signal player_defeated
+
+@onready var tongue_attack = $TonguePath/TonguePathFollower
+@onready var stamina_bar = $UI/StaminaBar
+@onready var tongue_remote_transform = $TonguePath/TonguePathFollower/RemoteTransform2D
+@onready var mum_tongue = $TonguePath/TonguePathFollower/MumTongue
+@onready var anim = $AnimatedSprite2D
+
 @export var SPEED = 300.0
 @export var CLIMB_SPEED = 100.0
 @export var JUMP_VELOCITY = -600.0
 @export var GRAVITY = 1500
 
-@onready var tongue_attack = $TonguePath/TonguePathFollower
-@onready var stamina_bar = $UI/StaminaBar
-@onready var anim = $AnimatedSprite2D
-var eating: bool = false
+@export var effective_size = Vector2(64, 64)
+@export var debug = true
 
 var stamina: float = 100.0
 var empty_stamina: bool = false
 var full_stamina: bool = true
-
-@export var effective_size = Vector2(64, 64)
-@export var debug = true
-
+var grapple_path: Path2D = null
+var grapple_path_follower: PathFollow2D = null
+var eating: bool = false
 var prev_vel = Vector2.ZERO
+var health = 3
+var invulnerable: bool = false
 
 # Possible states for the player
 enum STATE {
@@ -50,6 +59,8 @@ func _physics_process(delta: float) -> void:
 			attack_state(delta)
 		STATE.CLIMB:
 			climb_state(delta)
+		STATE.GRAPPLE:
+			grapple_state(delta)
 	
 	animate()
 	
@@ -58,7 +69,7 @@ func _physics_process(delta: float) -> void:
 
 func normal_state(delta: float) -> void:
 	if Input.is_action_just_pressed("attack"):
-		$TonguePath/TonguePathFollower/MumTongue.monitorable = true
+		mum_tongue.monitorable = true
 		$TongueSound.play()
 		state = STATE.ATTACK
 		return
@@ -107,11 +118,11 @@ func attack_state(delta: float) -> void:
 	
 	if tongue_attack.progress_ratio == 1:
 		tongue_attack.progress_ratio = 0
+		mum_tongue.monitorable = false
 		tongue_attack.visible = false
-		$TonguePath/TonguePathFollower/MumTongue.monitorable = false
 		if eating:
 			eating = false
-			var food = get_node($TonguePath/TonguePathFollower/RemoteTransform2D.remote_path)
+			var food = get_node(tongue_remote_transform.remote_path)
 			food.handle_death()
 		state = STATE.NORMAL
 	
@@ -161,14 +172,54 @@ func manage_stamina():
 	
 	stamina_bar.value = stamina
 
+func grapple_state(delta: float) -> void:
+	if grapple_path == null:
+		grapple_path = Path2D.new()
+		grapple_path.name = "GrapplePath"
+		
+		var path_curve = Curve2D.new()
+		grapple_path_follower = PathFollow2D.new()
+		grapple_path_follower.name = "PathFollower"
+		
+		var remote_transform = RemoteTransform2D.new()
+		remote_transform.name = "GrappleTransform"
+		
+		path_curve.add_point($TonguePath.global_position - Vector2(0, 32))
+		path_curve.add_point(tongue_attack.global_position)
+		grapple_path.curve = path_curve
+		grapple_path_follower.rotates = false
+		grapple_path_follower.loop = false
+
+		#grapple_path.scale.x = $TonguePath.scale.x
+		remote_transform.remote_path = get_path()
+		
+		grapple_path.add_child(grapple_path_follower)
+		grapple_path_follower.add_child(remote_transform)
+		get_parent().add_child(grapple_path)
+	
+	grapple_path_follower.progress += 5
+	
+	if is_on_wall():
+		grapple_path.queue_free()
+		tongue_attack.progress_ratio = 0
+		state = STATE.CLIMB
+	
+	move_and_slide()
+	
+	
 func _on_mum_tongue_area_entered(area: Area2D) -> void:
 	if area.name == "EdibleBox" and state == STATE.ATTACK:
-		$TonguePath/TonguePathFollower/RemoteTransform2D.remote_path = area.get_parent().get_path()
+		tongue_remote_transform.remote_path = area.get_parent().get_path()
 		eating = true
 
 
 func _on_stamina_cooldown_timeout() -> void:
 	empty_stamina = false
+
+
+func _on_mum_tongue_body_entered(body: Node2D) -> void:
+	if body is TileMapLayer and not eating:
+		state = STATE.GRAPPLE
 
 # There's certainly many better ways to do animation
 # For example, using a tree
@@ -234,3 +285,21 @@ func animate() -> void:
 		for child in get_children():
 			if child is Node2D and child.name != "TonguePath" and not child.is_in_group("noflip"):
 				child.scale.y = abs(child.scale.y) * s2
+
+func take_damage(dmg):
+	health -= dmg
+	if health <= 0:
+		emit_signal("player_defeated")
+	emit_signal("player_take_damage", dmg)
+	$HurtCooldown.start()
+	invulnerable = true
+
+func _on_hurt_box_body_entered(body: Node2D) -> void:
+	if not invulnerable:
+		take_damage(1)
+		$AnimatedSprite2D.modulate = Color.RED 
+
+
+func _on_hurt_cooldown_timeout() -> void:
+	invulnerable = false
+	$AnimatedSprite2D.modulate = Color.WHITE
