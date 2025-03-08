@@ -1,7 +1,8 @@
 extends CharacterBody2D
 
 signal create_grapple
-
+signal player_take_damage(int)
+signal player_defeated
 
 @onready var tongue_attack = $TonguePath/TonguePathFollower
 @onready var stamina_bar = $UI/StaminaBar
@@ -24,7 +25,8 @@ var grapple_path: Path2D = null
 var grapple_path_follower: PathFollow2D = null
 var eating: bool = false
 var prev_vel = Vector2.ZERO
-
+var health = 3
+var invulnerable: bool = false
 
 # Possible states for the player
 enum STATE {
@@ -274,3 +276,21 @@ func animate() -> void:
 		for child in get_children():
 			if child is Node2D and child.name != "TonguePath" and not child.is_in_group("noflip"):
 				child.scale.y = abs(child.scale.y) * s2
+
+func take_damage(dmg):
+	health -= dmg
+	if health <= 0:
+		emit_signal("player_defeated")
+	emit_signal("player_take_damage", dmg)
+	$HurtCooldown.start()
+	invulnerable = true
+
+func _on_hurt_box_body_entered(body: Node2D) -> void:
+	if not invulnerable:
+		take_damage(1)
+		$AnimatedSprite2D.modulate = Color.RED 
+
+
+func _on_hurt_cooldown_timeout() -> void:
+	invulnerable = false
+	$AnimatedSprite2D.modulate = Color.WHITE
