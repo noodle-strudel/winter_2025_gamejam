@@ -1,44 +1,33 @@
-[gd_scene load_steps=5 format=3 uid="uid://dlnhwsdvfjlg7"]
+[gd_scene load_steps=7 format=4 uid="uid://dlnhwsdvfjlg7"]
 
+[ext_resource type="Texture2D" uid="uid://dnwq5k7lam3ea" path="res://sprites/bg.png" id="1_fa5f3"]
 [ext_resource type="PackedScene" uid="uid://cw7cwr4lfsvse" path="res://scenes/mum.tscn" id="1_gt3vi"]
 [ext_resource type="PackedScene" uid="uid://cm2ivsqmkkqlk" path="res://scenes/beetle_enemy.tscn" id="2_ok7bk"]
 [ext_resource type="PackedScene" uid="uid://bbfixdd0dm6cd" path="res://scenes/fly_enemy.tscn" id="3_170ti"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_ikw6r"]
-size = Vector2(320, 16)
+[ext_resource type="TileSet" uid="uid://coh6k1wo8sh15" path="res://stone_brick_tiles.tres" id="4_7v7kb"]
+[ext_resource type="Script" path="res://scripts/cam_zone_manager.gd" id="6_xutvh"]
 
 [node name="Level1" type="Node2D"]
 
+[node name="BG" type="Sprite2D" parent="."]
+scale = Vector2(2, 2)
+texture = ExtResource("1_fa5f3")
+centered = false
+
 [node name="Mum" parent="." instance=ExtResource("1_gt3vi")]
-
-[node name="TESTPLATFORM" type="StaticBody2D" parent="."]
-position = Vector2(72, 328)
-collision_layer = 4
-collision_mask = 0
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="TESTPLATFORM"]
-shape = SubResource("RectangleShape2D_ikw6r")
-
-[node name="Polygon2D" type="Polygon2D" parent="TESTPLATFORM"]
-position = Vector2(-20, 0)
-scale = Vector2(0.703125, 1)
-polygon = PackedVector2Array(-199.111, -8, 256, -8, 256, 8, -199.111, 8)
-
-[node name="TESTPLATFORM2" type="StaticBody2D" parent="."]
-position = Vector2(656, 328)
-collision_layer = 4
-collision_mask = 0
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="TESTPLATFORM2"]
-shape = SubResource("RectangleShape2D_ikw6r")
-
-[node name="Polygon2D" type="Polygon2D" parent="TESTPLATFORM2"]
-position = Vector2(-20, 0)
-scale = Vector2(0.703125, 1)
-polygon = PackedVector2Array(-199.111, -8, 256, -8, 256, 8, -199.111, 8)
+position = Vector2(125, 268)
+debug = false
 
 [node name="BeetleEnemy" parent="." instance=ExtResource("2_ok7bk")]
-position = Vector2(672, 112)
+position = Vector2(617, -214)
 
 [node name="FlyEnemy" parent="." instance=ExtResource("3_170ti")]
-position = Vector2(296, 64)
+position = Vector2(140, -241)
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+tile_map_data = PackedByteArray("AAAAAAEAAAAGAAIAAAAAAAQAAAALAAIAAAAAAAMAAAALAAIAAAAAAAIAAAALAAIAAAD//wEAAAAIAAEAAAD//wIAAAAIAAEAAAD//wMAAAAIAAEAAAD//wQAAAAIAAEAAAD//wUAAAAIAAEAAAAAAAUAAAAGAAEAAAAAAAAAAAAJAAIAAAABAAAAAAAJAAIAAAACAAAAAAAJAAIAAAADAAAAAAAJAAIAAAAEAAAAAAAJAAIAAAAFAAAAAAAJAAIAAAAGAAAAAAAGAAIAAAAHAAAAAAALAAMAAAAGAAEAAAALAAMAAAAFAAEAAAAJAAMAAAAEAAEAAAAJAAMAAAADAAEAAAAJAAMAAAACAAEAAAAJAAMAAAABAAEAAAAJAAMAAAAJAP//AAACAAMAAAAIAP//AAACAAMAAAAHAP//AAAGAAAAAAAGAP//AAAKAAAAAAAFAP//AAAKAAAAAAADAP//AAAKAAAAAAAEAP//AAAKAAAAAAACAP//AAAKAAAAAAABAP//AAAKAAAAAAAAAP//AAAKAAAAAAD/////AAAIAAAAAAD//wAAAAAIAAEAAAD//wYAAAAIAAMAAAABAAUAAAAKAAAAAAACAAUAAAAKAAAAAAABAAYAAAAJAAMAAAAAAAYAAAAJAAMAAAACAAYAAAAJAAMAAAADAAYAAAAJAAMAAAADAAUAAAAKAAAAAAAEAAUAAAAKAAAAAAAFAAUAAAAKAAAAAAAGAAUAAAAKAAAAAAAHAAUAAAAKAAAAAAAIAAUAAAAKAAAAAAAJAAUAAAAKAAAAAAAJAAYAAAAJAAMAAAAIAAYAAAAJAAMAAAAHAAYAAAAJAAMAAAAGAAYAAAAJAAMAAAAFAAYAAAAJAAMAAAAEAAYAAAAJAAMAAAAKAAUAAAAKAAAAAAAKAAYAAAAJAAMAAAALAAYAAAAJAAMAAAAMAAYAAAAJAAMAAAANAAYAAAAJAAMAAAAOAAYAAAAJAAMAAAAQAAYAAAAJAAMAAAAPAAYAAAAJAAMAAAARAAYAAAAJAAMAAAASAAUAAAAJAAIAAAATAAUAAAAJAAIAAAAUAAUAAAALAAIAAAARAAUAAAAJAAIAAAAQAAUAAAAJAAIAAAAPAAUAAAAFAAEAAAAOAAUAAAAKAAAAAAANAAUAAAAKAAAAAAAMAAUAAAAKAAAAAAALAAUAAAAKAAAAAAASAAYAAAAJAAMAAAATAAYAAAAJAAMAAAAUAAYAAAALAAMAAAAKAP//AAACAAMAAAALAP//AAACAAMAAAAMAP//AAACAAMAAAAUAAQAAAALAAIAAAATAAQAAAAJAAIAAAATAAMAAAAJAAIAAAAUAAMAAAALAAIAAAAUAAIAAAALAAIAAAATAAIAAAAFAAEAAAATAAEAAAAIAAEAAAAUAAEAAAALAAIAAAAUAAAAAAALAAIAAAATAAAAAAAIAAEAAAATAP//AAAIAAEAAAAUAP//AAALAAIAAAAUAP7/AAALAAIAAAAUAP3/AAALAAIAAAATAP7/AAAIAAEAAAATAP3/AAAIAAEAAAATAPz/AAAIAAEAAAATAPv/AAAIAAEAAAATAPr/AAAIAAAAAAAUAPr/AAALAAAAAAAUAPv/AAALAAIAAAAUAPz/AAALAAIAAAASAAQAAAAJAAIAAAASAAMAAAAJAAIAAAASAAIAAAAKAAAAAAARAAIAAAAIAAAAAAARAAMAAAAFAAEAAAARAAQAAAAJAAIAAAAQAAQAAAAFAAEAAAAQAAMAAAAIAAAAAAAPAAQAAAAIAAAAAAAQAP//AAADAAMAAAAPAP//AAACAAMAAAAOAP//AAACAAMAAAANAP//AAACAAMAAAA=")
+tile_set = ExtResource("4_7v7kb")
+
+[node name="CamZoneManager" type="Node2D" parent="."]
+script = ExtResource("6_xutvh")
+zones = [Rect2i(0, 0, 640, 360), Rect2i(640, 0, 640, 360), Rect2i(640, -360, 640, 360)]
