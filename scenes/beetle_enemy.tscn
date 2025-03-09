@@ -15,8 +15,9 @@ size = Vector2(112, 66)
 size = Vector2(112, 34)
 
 [node name="BeetleEnemy" type="CharacterBody2D"]
+process_mode = 1
 collision_layer = 2
-collision_mask = 5
+collision_mask = 21
 script = ExtResource("1_stwso")
 health = 2
 
@@ -45,6 +46,8 @@ shape = SubResource("RectangleShape2D_dludg")
 debug_color = Color(0.805342, 0.379349, 0.459398, 0.42)
 
 [node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 16
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
 position = Vector2(0, -23)
@@ -52,6 +55,8 @@ shape = SubResource("RectangleShape2D_o4ob2")
 
 [node name="EdibleBox" type="Area2D" parent="."]
 visible = false
+collision_layer = 8
+collision_mask = 0
 monitorable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="EdibleBox"]

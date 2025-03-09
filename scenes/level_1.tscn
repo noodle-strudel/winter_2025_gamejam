@@ -1,13 +1,16 @@
-[gd_scene load_steps=7 format=4 uid="uid://dlnhwsdvfjlg7"]
+[gd_scene load_steps=8 format=4 uid="uid://dlnhwsdvfjlg7"]
 
 [ext_resource type="Texture2D" uid="uid://dnwq5k7lam3ea" path="res://sprites/bg.png" id="1_fa5f3"]
 [ext_resource type="PackedScene" uid="uid://cw7cwr4lfsvse" path="res://scenes/mum.tscn" id="1_gt3vi"]
+[ext_resource type="Script" path="res://scripts/level_1.gd" id="1_w1mdj"]
 [ext_resource type="PackedScene" uid="uid://cm2ivsqmkkqlk" path="res://scenes/beetle_enemy.tscn" id="2_ok7bk"]
 [ext_resource type="PackedScene" uid="uid://bbfixdd0dm6cd" path="res://scenes/fly_enemy.tscn" id="3_170ti"]
 [ext_resource type="TileSet" uid="uid://coh6k1wo8sh15" path="res://stone_brick_tiles.tres" id="4_7v7kb"]
 [ext_resource type="Script" path="res://scripts/cam_zone_manager.gd" id="6_xutvh"]
 
 [node name="Level1" type="Node2D"]
+process_mode = 3
+script = ExtResource("1_w1mdj")
 
 [node name="BG Map" type="Sprite2D" parent="."]
 scale = Vector2(2, 2)
@@ -87,6 +90,7 @@ texture = ExtResource("1_fa5f3")
 centered = false
 
 [node name="Mum" parent="." instance=ExtResource("1_gt3vi")]
+process_mode = 1
 position = Vector2(125, 268)
 
 [node name="BeetleEnemy" parent="." instance=ExtResource("2_ok7bk")]
@@ -105,3 +109,15 @@ zones = [Rect2i(0, 0, 640, 360), Rect2i(640, 0, 640, 360), Rect2i(640, -360, 640
 
 [node name="FlyEnemy2" parent="." instance=ExtResource("3_170ti")]
 position = Vector2(1089, -614)
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="HealthContainer" type="HBoxContainer" parent="UI"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ResetTimer" type="Timer" parent="."]
+
+[connection signal="player_defeated" from="Mum" to="." method="_on_mum_player_defeated"]
+[connection signal="player_take_damage" from="Mum" to="." method="_on_mum_player_take_damage"]
+[connection signal="timeout" from="ResetTimer" to="." method="_on_reset_timer_timeout"]
