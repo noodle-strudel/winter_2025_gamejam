@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://bbfixdd0dm6cd" path="res://scenes/fly_enemy.tscn" id="3_170ti"]
 [ext_resource type="TileSet" uid="uid://coh6k1wo8sh15" path="res://stone_brick_tiles.tres" id="4_7v7kb"]
 [ext_resource type="Script" path="res://scripts/cam_zone_manager.gd" id="6_xutvh"]
+[ext_resource type="AudioStream" uid="uid://ckhkbjri60iki" path="res://sound/music.wav" id="7_kvnqo"]
 
 [node name="Level1" type="Node2D"]
 process_mode = 3
