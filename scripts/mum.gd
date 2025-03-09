@@ -4,16 +4,20 @@ signal create_grapple
 signal player_take_damage(int)
 signal player_defeated
 
-@onready var tongue_attack = $TonguePath/TonguePathFollower
-@onready var stamina_bar = $UI/StaminaBar
-@onready var tongue_remote_transform = $TonguePath/TonguePathFollower/RemoteTransform2D
-@onready var mum_tongue = $TonguePath/TonguePathFollower/MumTongue
+@onready var tongue_attack_origin = $TonguePath/TonguePathOrigin
+@onready var tongue_path = $TonguePath/TonguePathOrigin/TonguePath
+@onready var tongue_attack = $TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower
+@onready var tongue_remote_transform = $TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower/RemoteTransform2D
+@onready var mum_tongue = $TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower/MumTongue
 @onready var anim = $AnimatedSprite2D
+@onready var stamina_bar = $UI/StaminaBar
+
 
 @export var SPEED = 300.0
 @export var CLIMB_SPEED = 100.0
 @export var JUMP_VELOCITY = -600.0
 @export var GRAVITY = 1500
+@export var KNOCKBACK = -1000
 
 @export var effective_size = Vector2(64, 64)
 @export var debug = true
@@ -27,6 +31,9 @@ var eating: bool = false
 var prev_vel = Vector2.ZERO
 var health = 3
 var invulnerable: bool = false
+
+# keeps track of what state the player was in last
+var prev_state: int = 0
 
 # Possible states for the player
 enum STATE {
@@ -61,6 +68,8 @@ func _physics_process(delta: float) -> void:
 			climb_state(delta)
 		STATE.GRAPPLE:
 			grapple_state(delta)
+		STATE.HIT:
+			hit_state(delta)
 	
 	animate()
 	
@@ -70,11 +79,14 @@ func _physics_process(delta: float) -> void:
 func normal_state(delta: float) -> void:
 	if Input.is_action_just_pressed("attack"):
 		mum_tongue.monitorable = true
+		mum_tongue.monitoring = true
 		$TongueSound.play()
+		prev_state = state
 		state = STATE.ATTACK
 		return
 	
 	if is_on_wall_only() and not empty_stamina:
+		prev_state = state
 		state = STATE.CLIMB
 		return
 		
@@ -85,7 +97,13 @@ func normal_state(delta: float) -> void:
 	# Handle jump.
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
-
+		
+	# moves the tongue 45 degrees up
+	if Input.is_action_pressed("up"):
+		tongue_attack_origin.rotation_degrees = -45 
+	else:
+		tongue_attack_origin.rotation_degrees = 0
+	
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	var direction := Input.get_axis("left", "right")
@@ -94,21 +112,22 @@ func normal_state(delta: float) -> void:
 		
 	else:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
-		
+	
 	move_and_slide()
 
 func attack_state(delta: float) -> void:
 	if is_on_wall_only() and not empty_stamina:
 		tongue_attack.progress_ratio = 0
-		state = STATE.CLIMB
 		tongue_attack.visible = false
+		prev_state = state
+		state = STATE.CLIMB
 		return
 		
 	tongue_attack.visible = true
 	
 	# Add the gravity.
 	if not is_on_floor() and not is_on_wall():
-		velocity += get_gravity() * delta
+		velocity.y += GRAVITY * delta
 	
 	# Handle jump.
 	if Input.is_action_just_pressed("jump") and is_on_floor():
@@ -119,6 +138,7 @@ func attack_state(delta: float) -> void:
 	if tongue_attack.progress_ratio == 1:
 		tongue_attack.progress_ratio = 0
 		mum_tongue.monitorable = false
+		mum_tongue.monitoring = false
 		tongue_attack.visible = false
 		if eating:
 			eating = false
@@ -135,8 +155,23 @@ func attack_state(delta: float) -> void:
 
 func climb_state(_delta: float) -> void:
 	if (not is_on_wall() and not is_on_ceiling()) or empty_stamina:
-		state = STATE.NORMAL
-		
+		if prev_state == STATE.HIT:
+			prev_state = STATE.CLIMB
+			state = STATE.HIT
+		else:
+			prev_state = state
+			state = STATE.NORMAL
+		return
+	
+	# Handle jump. (make sure to add a directional aspect, so user jumps OFF of wall)
+	if Input.is_action_just_pressed("jump"):
+		if prev_state == STATE.HIT:
+			prev_state = STATE.CLIMB
+			state = STATE.HIT
+		else:
+			prev_state = state
+			state = STATE.NORMAL
+		velocity.y = JUMP_VELOCITY
 		return
 		
 	var direction := Vector2(int(Input.get_axis("left", "right")), int(Input.get_axis("up", "down")))
@@ -146,14 +181,6 @@ func climb_state(_delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 		velocity.y = move_toward(velocity.y, 0, SPEED)
 	move_and_slide()
-	
-	# Handle jump. (make sure to add a directional aspect, so user jumps OFF of wall)
-	if Input.is_action_just_pressed("jump"):
-		velocity.y = JUMP_VELOCITY
-		state = STATE.NORMAL
-		
-		return
-		
 	
 
 # Manages stamina and stanima bar
@@ -184,7 +211,7 @@ func grapple_state(delta: float) -> void:
 		var remote_transform = RemoteTransform2D.new()
 		remote_transform.name = "GrappleTransform"
 		
-		path_curve.add_point($TonguePath.global_position - Vector2(0, 32))
+		path_curve.add_point(tongue_path.global_position - Vector2(0, 32))
 		path_curve.add_point(tongue_attack.global_position)
 		grapple_path.curve = path_curve
 		grapple_path_follower.rotates = false
@@ -202,10 +229,52 @@ func grapple_state(delta: float) -> void:
 	if is_on_wall():
 		grapple_path.queue_free()
 		tongue_attack.progress_ratio = 0
+		prev_state = state
 		state = STATE.CLIMB
 	
-	move_and_slide()
+	if grapple_path_follower.progress_ratio == 1:
+		grapple_path.queue_free()
+		tongue_attack.progress_ratio = 0
+		
+		# add some jump velocity as a test
+		velocity.y = JUMP_VELOCITY
+		prev_state = state
+		state = STATE.NORMAL
 	
+	move_and_slide()
+
+# Hit state, cant attack and can only run, jump and climb
+func hit_state(delta):
+	
+	if is_on_wall_only() and not empty_stamina:
+		prev_state = state
+		state = STATE.CLIMB
+		return
+		
+	# Add the gravity.
+	if not is_on_floor():
+		velocity.y += GRAVITY * delta
+
+	# Handle jump.
+	if Input.is_action_just_pressed("jump") and is_on_floor():
+		velocity.y = JUMP_VELOCITY
+		
+	# moves the tongue 45 degrees up
+	if Input.is_action_pressed("up"):
+		tongue_attack_origin.rotation_degrees = -45 
+	else:
+		tongue_attack_origin.rotation_degrees = 0
+	
+	# Get the input direction and handle the movement/deceleration.
+	# As good practice, you should replace UI actions with custom gameplay actions.
+	var direction := Input.get_axis("left", "right")
+	if direction:
+		velocity.x = direction * SPEED
+		
+	else:
+		velocity.x = move_toward(velocity.x, 0, SPEED)
+	
+	move_and_slide()
 	
 func _on_mum_tongue_area_entered(area: Area2D) -> void:
 	if area.name == "EdibleBox" and state == STATE.ATTACK:
@@ -218,7 +287,9 @@ func _on_stamina_cooldown_timeout() -> void:
 
 
 func _on_mum_tongue_body_entered(body: Node2D) -> void:
-	if body is TileMapLayer and not eating:
+	if (body is TileMapLayer or body.name == "GrapplePoint") and not eating:
+		mum_tongue.set_deferred("monitorable", false)
+		mum_tongue.set_deferred("monitoring", false)
 		state = STATE.GRAPPLE
 
 # There's certainly many better ways to do animation
@@ -270,21 +341,25 @@ func animate() -> void:
 			anim.rotation_degrees = 90
 	else:
 		anim.rotation_degrees = 0
-		
+
 	if vel:
-		var s = 1
-		if relevant_vel < 0:
-			s = -1
-		if right_wall:
-			s *= -1
-		for child in get_children():
-			if child is Node2D and not child.is_in_group("noflip"):
-				child.scale.x = abs(child.scale.x) * s
+		
+		# only recalculate the left/right sprite direction if there is x velocity
+		if vel.x:
+			var s = 1
+			if relevant_vel < 0:
+				s = -1
+			if right_wall:
+				s *= -1
+			for child in get_children():
+				if child is Node2D and not child.is_in_group("noflip"):
+					child.scale.x = abs(child.scale.x) * s
 		
 		var s2 = -1 if surface == "ceiling" else 1
 		for child in get_children():
 			if child is Node2D and child.name != "TonguePath" and not child.is_in_group("noflip"):
 				child.scale.y = abs(child.scale.y) * s2
+
 
 func take_damage(dmg):
 	health -= dmg
@@ -294,12 +369,18 @@ func take_damage(dmg):
 	$HurtCooldown.start()
 	invulnerable = true
 
+
 func _on_hurt_box_body_entered(body: Node2D) -> void:
 	if not invulnerable:
+		var knockback_direction = (body.global_position - global_position).normalized()
+		velocity += knockback_direction * KNOCKBACK
+		set_collision_mask_value(2, false)
 		take_damage(1)
+		state = STATE.HIT
 		$AnimatedSprite2D.modulate = Color.RED 
 
 
 func _on_hurt_cooldown_timeout() -> void:
 	invulnerable = false
+	set_collision_mask_value(2, true)
 	$AnimatedSprite2D.modulate = Color.WHITE

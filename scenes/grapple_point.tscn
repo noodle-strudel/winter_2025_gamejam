@@ -1,10 +1,15 @@
 [gd_scene load_steps=2 format=3 uid="uid://cynomj4u2u1un"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_d6ym6"]
+radius = 24.0
 
-[node name="GrapplePoint" type="Area2D"]
+[node name="GrapplePoint" type="StaticBody2D"]
 collision_layer = 32
 collision_mask = 16
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_d6ym6")
+
+[node name="Polygon2D" type="Polygon2D" parent="."]
+scale = Vector2(2, 2)
+polygon = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)

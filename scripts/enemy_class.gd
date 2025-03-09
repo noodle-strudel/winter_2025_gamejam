@@ -22,7 +22,6 @@ var player_in_area: bool = false
 func take_damage():
 	taking_damage = true
 	health -= 1
-	print(self, "only has ", health)
 	if health <= 0:
 		dead = true
 

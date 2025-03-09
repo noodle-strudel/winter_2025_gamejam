@@ -14,7 +14,7 @@ size = Vector2(112, 66)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nbqvg"]
 size = Vector2(112, 34)
 
-[node name="BeetleEnemy" type="CharacterBody2D"]
+[node name="BeetleEnemy" type="CharacterBody2D" groups=["enemy"]]
 process_mode = 1
 collision_layer = 2
 collision_mask = 21

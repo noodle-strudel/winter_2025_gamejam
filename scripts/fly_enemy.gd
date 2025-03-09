@@ -23,6 +23,7 @@ func _physics_process(delta: float) -> void:
 	
 
 func move():
+	#print(direction, " start_offset: ", start_offset)
 	if not dead:
 		if not is_chasing_player and not returning:
 			velocity.y = wobble() * speed
@@ -35,19 +36,21 @@ func move():
 			var dir_to_start = position.direction_to(starting_pos) * speed
 			velocity.x = move_toward(velocity.x, dir_to_start.x, 5)
 			velocity.y = move_toward(velocity.y, dir_to_start.y, 5)
+			direction = Vector2(abs(velocity.x)/velocity.x, 0)
 			if position.distance_to(starting_pos) <= 1:
 				returning = false
 		elif is_chasing_player and not taking_damage:
 			var dir_to_player = position.direction_to(player.position) * speed
 			velocity.x = move_toward(velocity.x, dir_to_player.x, 5)
 			velocity.y = move_toward(velocity.y, dir_to_player.y, 5)
+			direction = Vector2(abs(velocity.x)/velocity.x, 0)
 			returning = true
 		else:
 			var knockback_dir = position.direction_to(player.position) * knockback_force
 			velocity.x = knockback_dir.x
 		is_moving = true
 
-# 
+
 func wobble():
 	angle += 0.1
 	
@@ -61,9 +64,9 @@ func choose(array: Array):
 	return array.front()
 
 func handle_animation(delta):
-	if not dead and not taking_damage and not is_attacking:
+	if not dead and not taking_damage:
 		# Play walking animation dependent on direction
-		pass
+		$AnimatedSprite2D.scale.x = -1 if direction == Vector2.RIGHT else 1
 	elif not dead and taking_damage and not is_attacking:
 		# Play hurt animation
 		await get_tree().create_timer(1).timeout
