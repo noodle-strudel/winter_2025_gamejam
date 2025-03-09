@@ -54,16 +54,17 @@ func defeat(delta):
 	$EdibleBox.show()
 
 func handle_animation(delta):
+	if velocity.x:
+		$Beetle.scale.x = abs($Beetle.scale.x) * (-1 if velocity.x > 0 else 1)
 	if not dead and not taking_damage and not is_attacking:
-		# Play walking animation dependent on direction
-		pass
+		$AnimationPlayer.play("walk")
 	elif not dead and taking_damage and not is_attacking:
-		# Play hurt animation
+		$AnimationPlayer.play("hurt")
 		await get_tree().create_timer(1).timeout
 		taking_damage = false
 	elif dead and is_moving:
 		is_moving = false
-		$Polygon2D.scale *= -1
+		$AnimationPlayer.play("die")
 		await get_tree().create_timer(1).timeout
 		edible = true
 

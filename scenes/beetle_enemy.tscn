@@ -1,31 +1,205 @@
-[gd_scene load_steps=6 format=3 uid="uid://cm2ivsqmkkqlk"]
+[gd_scene load_steps=13 format=3 uid="uid://cm2ivsqmkkqlk"]
 
 [ext_resource type="Script" path="res://scripts/beetle_enemy.gd" id="1_stwso"]
+[ext_resource type="Texture2D" uid="uid://chj2e66gwe5ov" path="res://sprites/beetle.png" id="2_m6yt3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_55xhr"]
-size = Vector2(96, 18)
+size = Vector2(129, 56)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dludg"]
 size = Vector2(384, 106)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_o4ob2"]
-size = Vector2(112, 66)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_m6o4o"]
+radius = 29.0
+height = 136.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nbqvg"]
 size = Vector2(112, 34)
 
 [node name="BeetleEnemy" type="CharacterBody2D" groups=["enemy"]]
+[sub_resource type="Animation" id="Animation_boe7b"]
+resource_name = "idle"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Beetle:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+
+[sub_resource type="Animation" id="Animation_6elxy"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Beetle:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Beetle:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(5, -21)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Beetle:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Beetle:scale")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Beetle:modulate")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_bgjxp"]
+resource_name = "walk"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Beetle:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5, 0.75),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+
+[sub_resource type="Animation" id="Animation_2f1ud"]
+resource_name = "die"
+length = 0.2
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Beetle:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(5, -21), Vector2(5, -28), Vector2(5, -21)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Beetle:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Beetle:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1, -1), Vector2(1, -1)]
+}
+
+[sub_resource type="Animation" id="Animation_toyoy"]
+resource_name = "hurt"
+step = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Beetle:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.9),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [Color(1, 0.227451, 0.227451, 1), Color(1, 1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Beetle:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(5, -24), Vector2(5, -21)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_d8kvc"]
+_data = {
+"RESET": SubResource("Animation_6elxy"),
+"die": SubResource("Animation_2f1ud"),
+"hurt": SubResource("Animation_toyoy"),
+"idle": SubResource("Animation_boe7b"),
+"walk": SubResource("Animation_bgjxp")
+}
 process_mode = 1
 collision_layer = 2
 collision_mask = 21
 script = ExtResource("1_stwso")
 health = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -1)
+[node name="Hitbox" type="CollisionShape2D" parent="."]
+position = Vector2(2.5, -20)
 shape = SubResource("RectangleShape2D_55xhr")
 
 [node name="Polygon2D" type="Polygon2D" parent="."]
+visible = false
 position = Vector2(0, -16)
 scale = Vector2(1.42017, 1)
 color = Color(0, 0.741176, 0.756863, 1)
@@ -44,14 +218,17 @@ collision_layer = 0
 position = Vector2(0, -43)
 shape = SubResource("RectangleShape2D_dludg")
 debug_color = Color(0.805342, 0.379349, 0.459398, 0.42)
+metadata/_edit_lock_ = true
 
 [node name="Hurtbox" type="Area2D" parent="."]
 collision_layer = 2
 collision_mask = 16
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
-position = Vector2(0, -23)
-shape = SubResource("RectangleShape2D_o4ob2")
+position = Vector2(5, -20)
+rotation = 1.5708
+shape = SubResource("CapsuleShape2D_m6o4o")
+metadata/_edit_lock_ = true
 
 [node name="EdibleBox" type="Area2D" parent="."]
 visible = false
@@ -63,6 +240,18 @@ monitorable = false
 position = Vector2(0, -7)
 shape = SubResource("RectangleShape2D_nbqvg")
 debug_color = Color(0.365439, 0.608379, 0.290536, 0.42)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_d8kvc")
+}
+autoplay = "walk"
+
+[node name="Beetle" type="Sprite2D" parent="."]
+position = Vector2(5, -21)
+texture = ExtResource("2_m6yt3")
+hframes = 4
+frame = 1
 
 [connection signal="body_entered" from="EntityDetector" to="." method="_on_entity_detector_body_entered"]
 [connection signal="body_exited" from="EntityDetector" to="." method="_on_entity_detector_body_exited"]
