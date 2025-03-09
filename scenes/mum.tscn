@@ -1,6 +1,6 @@
-[gd_scene load_steps=34 format=3 uid="uid://cw7cwr4lfsvse"]
+[gd_scene load_steps=35 format=3 uid="uid://cw7cwr4lfsvse"]
 
-[ext_resource type="Script" path="res://scenes/mum.gd" id="1_7ljp4"]
+[ext_resource type="Script" path="res://scripts/mum.gd" id="1_7ljp4"]
 [ext_resource type="Texture2D" uid="uid://ben8hdhrrhc2a" path="res://sprites/frog.png" id="2_m7s8v"]
 [ext_resource type="Texture2D" uid="uid://cpbxpxoa647k" path="res://icon.svg" id="2_xhba6"]
 [ext_resource type="AudioStream" uid="uid://c4nk8xc528fx5" path="res://sound/tongue.wav" id="3_6nknk"]
@@ -207,7 +207,11 @@ bg_color = Color(0.758192, 0.758192, 0.758192, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oq85g"]
 bg_color = Color(0.795979, 0.543539, 0.0188896, 1)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ishdc"]
+size = Vector2(64, 58)
+
 [node name="Mum" type="CharacterBody2D"]
+process_mode = 1
 collision_mask = 6
 script = ExtResource("1_7ljp4")
 
@@ -236,6 +240,8 @@ curve = SubResource("Curve2D_gbwyh")
 position = Vector2(16, -32)
 
 [node name="MumTongue" type="Area2D" parent="TonguePath/TonguePathFollower"]
+collision_layer = 16
+collision_mask = 14
 monitorable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TonguePath/TonguePathFollower/MumTongue"]
@@ -264,6 +270,7 @@ offset_right = 40.0
 offset_bottom = 28.0
 
 [node name="StaminaBar" type="ProgressBar" parent="UI"]
+z_index = 1
 layout_mode = 1
 anchors_preset = 13
 anchor_left = 0.5
@@ -289,5 +296,17 @@ position = Vector2(0, 28)
 position = Vector2(0, 28)
 stream = ExtResource("3_6nknk")
 
+[node name="HurtBox" type="Area2D" parent="."]
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox"]
+position = Vector2(3, 0)
+shape = SubResource("RectangleShape2D_ishdc")
+
+[node name="HurtCooldown" type="Timer" parent="."]
+
 [connection signal="area_entered" from="TonguePath/TonguePathFollower/MumTongue" to="." method="_on_mum_tongue_area_entered"]
+[connection signal="body_entered" from="TonguePath/TonguePathFollower/MumTongue" to="." method="_on_mum_tongue_body_entered"]
 [connection signal="timeout" from="StaminaCooldown" to="." method="_on_stamina_cooldown_timeout"]
+[connection signal="body_entered" from="HurtBox" to="." method="_on_hurt_box_body_entered"]
+[connection signal="timeout" from="HurtCooldown" to="." method="_on_hurt_cooldown_timeout"]

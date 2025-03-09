@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://dc1d7hswntu71"]
+
+[ext_resource type="Texture2D" uid="uid://yk5fa5teuday" path="res://sprites/health_heart.png" id="1_lv0gq"]
+
+[node name="HealthIcon" type="TextureRect"]
+texture = ExtResource("1_lv0gq")
+expand_mode = 2
+metadata/_edit_lock_ = true

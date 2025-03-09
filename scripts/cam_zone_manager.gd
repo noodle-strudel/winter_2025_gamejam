@@ -115,7 +115,7 @@ func _on_player_entered_zone(body, zone_idx):
 	
 	
 	#interpolate_cam_bounds(cam, tween, zones[current_zone_idx], zone, (1.0 if animate else 0.0))
-	interpolate_cam_bounds(cam, tween, old_cam_bounds, new_cam_bounds, (1.0 if animate else 0.0))
+	interpolate_cam_bounds(cam, tween, old_cam_bounds, new_cam_bounds, (0.5 if animate else 0.0))
 	
 	
 	await tween.finished
