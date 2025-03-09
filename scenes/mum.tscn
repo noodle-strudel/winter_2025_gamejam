@@ -11,14 +11,6 @@ size = Vector2(58, 56)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0v8ah"]
 size = Vector2(4, 56)
 
-[sub_resource type="Curve2D" id="Curve2D_gbwyh"]
-_data = {
-"points": PackedVector2Array(0, 0, 0, 0, 16, -32, 0, 0, 0, 0, 128, -32, 0, 0, 0, 0, 16, -32)
-}
-point_count = 3
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_8oy6e"]
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_iy4lk"]
 atlas = ExtResource("2_m7s8v")
 region = Rect2(100, 152, 100, 76)
@@ -210,6 +202,14 @@ bg_color = Color(0.795979, 0.543539, 0.0188896, 1)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ishdc"]
 size = Vector2(64, 58)
 
+[sub_resource type="Curve2D" id="Curve2D_gbwyh"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 16, -32, 0, 0, 0, 0, 128, -32, 0, 0, 0, 0, 16, -32)
+}
+point_count = 3
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_8oy6e"]
+
 [node name="Mum" type="CharacterBody2D"]
 process_mode = 1
 collision_mask = 6
@@ -231,30 +231,6 @@ collision_mask = 4
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RightTerrainDetector" groups=["noflip"]]
 position = Vector2(32, -28)
 shape = SubResource("RectangleShape2D_0v8ah")
-
-[node name="TonguePath" type="Path2D" parent="."]
-position = Vector2(0, 28)
-curve = SubResource("Curve2D_gbwyh")
-
-[node name="TonguePathFollower" type="PathFollow2D" parent="TonguePath"]
-position = Vector2(16, -32)
-
-[node name="MumTongue" type="Area2D" parent="TonguePath/TonguePathFollower"]
-collision_layer = 16
-collision_mask = 14
-monitorable = false
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="TonguePath/TonguePathFollower/MumTongue"]
-shape = SubResource("CircleShape2D_8oy6e")
-
-[node name="Polygon2D" type="Polygon2D" parent="TonguePath/TonguePathFollower/MumTongue"]
-position = Vector2(0, -1.90735e-06)
-scale = Vector2(0.884615, 0.913043)
-color = Color(0.914065, 0.281827, 0.232554, 1)
-polygon = PackedVector2Array(-7.91304, -7.66667, -11.3043, 0, -7.91304, 7.66667, 0, 10.9524, 7.91304, 7.66667, 11.3043, 0, 7.91304, -7.66667, 0, -11)
-
-[node name="RemoteTransform2D" type="RemoteTransform2D" parent="TonguePath/TonguePathFollower"]
-remote_path = NodePath("../MumTongue/CollisionShape2D")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_ruqhk")
@@ -305,8 +281,39 @@ shape = SubResource("RectangleShape2D_ishdc")
 
 [node name="HurtCooldown" type="Timer" parent="."]
 
-[connection signal="area_entered" from="TonguePath/TonguePathFollower/MumTongue" to="." method="_on_mum_tongue_area_entered"]
-[connection signal="body_entered" from="TonguePath/TonguePathFollower/MumTongue" to="." method="_on_mum_tongue_body_entered"]
+[node name="TonguePath" type="Node2D" parent="."]
+editor_description = "This one is at the origin of the character so it flips properly"
+
+[node name="TonguePathOrigin" type="Node2D" parent="TonguePath"]
+position = Vector2(16, -4)
+
+[node name="TonguePath" type="Path2D" parent="TonguePath/TonguePathOrigin"]
+position = Vector2(-16, 32)
+curve = SubResource("Curve2D_gbwyh")
+
+[node name="TonguePathFollower" type="PathFollow2D" parent="TonguePath/TonguePathOrigin/TonguePath"]
+position = Vector2(16, -32)
+
+[node name="MumTongue" type="Area2D" parent="TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower"]
+collision_layer = 16
+collision_mask = 46
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower/MumTongue"]
+shape = SubResource("CircleShape2D_8oy6e")
+
+[node name="Polygon2D" type="Polygon2D" parent="TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower/MumTongue"]
+position = Vector2(0, -1.90735e-06)
+scale = Vector2(0.884615, 0.913043)
+color = Color(0.914065, 0.281827, 0.232554, 1)
+polygon = PackedVector2Array(-7.91304, -7.66667, -11.3043, 0, -7.91304, 7.66667, 0, 10.9524, 7.91304, 7.66667, 11.3043, 0, 7.91304, -7.66667, 0, -11)
+
+[node name="RemoteTransform2D" type="RemoteTransform2D" parent="TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower"]
+remote_path = NodePath("../MumTongue/CollisionShape2D")
+
 [connection signal="timeout" from="StaminaCooldown" to="." method="_on_stamina_cooldown_timeout"]
 [connection signal="body_entered" from="HurtBox" to="." method="_on_hurt_box_body_entered"]
 [connection signal="timeout" from="HurtCooldown" to="." method="_on_hurt_cooldown_timeout"]
+[connection signal="area_entered" from="TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower/MumTongue" to="." method="_on_mum_tongue_area_entered"]
+[connection signal="body_entered" from="TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower/MumTongue" to="." method="_on_mum_tongue_body_entered"]
