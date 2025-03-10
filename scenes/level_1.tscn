@@ -8,7 +8,6 @@
 [ext_resource type="TileSet" uid="uid://coh6k1wo8sh15" path="res://stone_brick_tiles.tres" id="4_7v7kb"]
 [ext_resource type="Script" path="res://scripts/cam_zone_manager.gd" id="6_xutvh"]
 [ext_resource type="PackedScene" uid="uid://cynomj4u2u1un" path="res://scenes/grapple_point.tscn" id="8_vmobh"]
-[ext_resource type="AudioStream" uid="uid://ckhkbjri60iki" path="res://sound/music.wav" id="7_kvnqo"]
 
 [node name="Level1" type="Node2D"]
 process_mode = 3
@@ -93,6 +92,7 @@ centered = false
 
 [node name="Mum" parent="." instance=ExtResource("1_gt3vi")]
 position = Vector2(125, 268)
+debug = false
 
 [node name="BeetleEnemy" parent="." instance=ExtResource("2_ok7bk")]
 position = Vector2(765, -97)
