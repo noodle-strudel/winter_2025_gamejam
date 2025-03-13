@@ -39,6 +39,9 @@ var prev_surface := 0
 # So the player can climb up onto the ground from the wall, without having a seziure
 var ledge_catch = 0
 
+var deaccel = 300.0
+var slow_deaccel
+
 # Possible states for the player
 enum STATE {
 	NORMAL,  # Walk and Jump State
@@ -93,6 +96,9 @@ func _physics_process(delta: float) -> void:
 	prev_surface = get_surface()
 
 func get_surface():
+	if is_on_ceiling():
+		return SURFACE.CEILING
+	
 	# Prioritize walls, unless we're somehow touching BOTH walls
 	# Not that it'd come up in the current state of the game
 	# But if it did, it may be good to change it. Like to take input into account.
@@ -111,8 +117,6 @@ func get_surface():
 			return SURFACE.FLOOR
 		return SURFACE.AIR
 	
-	if is_on_ceiling():
-		return SURFACE.CEILING
 	
 
 # Not to be confused with is_on_wall(). They're a little different, and I hope this one works better.
@@ -126,6 +130,7 @@ func is_ceiling_climbing():
 	return state == STATE.CLIMB and get_surface() == SURFACE.CEILING
 
 func normal_state(delta: float) -> void:
+	position.y -= ledge_catch
 	position.x += ledge_catch
 	
 	if Input.is_action_just_pressed("attack"):
@@ -209,6 +214,7 @@ func attack_state(delta: float) -> void:
 	move_and_slide()
 
 func climb_state(_delta: float) -> void:
+	var surf = get_surface()
 	anim.rotation_degrees = 0
 	if (not is_climbing()) or empty_stamina:
 		if prev_state == STATE.HIT:
@@ -222,23 +228,28 @@ func climb_state(_delta: float) -> void:
 	
 	# Handle jump. (make sure to add a directional aspect, so user jumps OFF of wall)
 	if Input.is_action_just_pressed("jump"):
+		prev_state = state
 		if prev_state == STATE.HIT:
-			prev_state = STATE.CLIMB
 			state = STATE.HIT
 		else:
-			prev_state = state
 			state = STATE.NORMAL
-		velocity.y = JUMP_VELOCITY
-		flip_vert(-1)
+		# Apply jump force
+		match surf:
+			SURFACE.LEFT:
+				velocity.x = -JUMP_VELOCITY * 3
+			SURFACE.RIGHT:
+				velocity.x = JUMP_VELOCITY * 3
+			SURFACE.CEILING:
+				velocity.y = -JUMP_VELOCITY / 2
+		flip_vert(1)
 		return
-	
-	var surf = get_surface()
+
 	var direction := Vector2(int(Input.get_axis("left", "right")), int(Input.get_axis("up", "down")))
 	if direction:
 		velocity = direction * CLIMB_SPEED
-		if surf == SURFACE.RIGHT and not direction.x < 0:
+		if surf == SURFACE.RIGHT:# and not direction.x < 0:
 			ledge_catch = 1
-		elif surf == SURFACE.LEFT and not direction.x > 0:
+		elif surf == SURFACE.LEFT:# and not direction.x > 0:
 			ledge_catch = -1
 		else:
 			ledge_catch = 0
@@ -247,7 +258,7 @@ func climb_state(_delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 		velocity.y = move_toward(velocity.y, 0, SPEED)
 	
-	match get_surface():
+	match surf:
 		SURFACE.CEILING:
 			flip(velocity.x)
 			flip_vert(-1)
@@ -257,6 +268,7 @@ func climb_state(_delta: float) -> void:
 		SURFACE.LEFT:
 			anim.rotation_degrees = 90
 			flip(velocity.y)
+	
 	
 	move_and_slide()
 	
@@ -461,7 +473,7 @@ func _on_hurt_box_body_entered(body: Node2D) -> void:
 	if not invulnerable:
 		var knockback_direction = (body.global_position - global_position).normalized()
 		velocity += knockback_direction * KNOCKBACK
-		set_collision_mask_value(2, false)
+		#set_collision_mask_value(2, false)
 		take_damage(1)
 		state = STATE.HIT
 		$AnimatedSprite2D.modulate = Color.RED 
@@ -469,5 +481,5 @@ func _on_hurt_box_body_entered(body: Node2D) -> void:
 
 func _on_hurt_cooldown_timeout() -> void:
 	invulnerable = false
-	set_collision_mask_value(2, true)
+	#set_collision_mask_value(2, true)
 	$AnimatedSprite2D.modulate = Color.WHITE
