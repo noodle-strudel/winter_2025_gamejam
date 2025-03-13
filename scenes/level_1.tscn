@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=4 uid="uid://dlnhwsdvfjlg7"]
+[gd_scene load_steps=9 format=4 uid="uid://dlnhwsdvfjlg7"]
 
 [ext_resource type="PackedScene" uid="uid://cw7cwr4lfsvse" path="res://scenes/mum.tscn" id="1_gt3vi"]
 [ext_resource type="Script" path="res://scripts/level_1.gd" id="1_w1mdj"]
@@ -7,6 +7,8 @@
 [ext_resource type="PackedScene" uid="uid://bbfixdd0dm6cd" path="res://scenes/fly_enemy.tscn" id="3_170ti"]
 [ext_resource type="TileSet" uid="uid://coh6k1wo8sh15" path="res://stone_brick_tiles.tres" id="4_7v7kb"]
 [ext_resource type="Script" path="res://scripts/cam_zone_manager.gd" id="6_xutvh"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nphsx"]
 
 [node name="Level1" type="Node2D"]
 process_mode = 3
@@ -92,6 +94,11 @@ centered = false
 [node name="Mum" parent="." instance=ExtResource("1_gt3vi")]
 position = Vector2(125, 268)
 
+[node name="BabyMum" type="CharacterBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BabyMum"]
+shape = SubResource("RectangleShape2D_nphsx")
+
 [node name="BeetleEnemy" parent="." instance=ExtResource("2_ok7bk")]
 position = Vector2(984, -88)
 
@@ -104,7 +111,7 @@ tile_set = ExtResource("4_7v7kb")
 
 [node name="CamZoneManager" type="Node2D" parent="."]
 script = ExtResource("6_xutvh")
-zones = [Rect2i(0, 0, 640, 384), Rect2i(640, 0, 640, 384), Rect2i(1280, 0, 640, 384), Rect2i(1920, 0, 640, 384), Rect2i(2560, 0, 640, 384), Rect2i(2560, -384, 640, 384), Rect2i(1920, -384, 640, 384), Rect2i(1280, -384, 640, 384), Rect2i(640, -384, 640, 384), Rect2i(0, -384, 640, 384), Rect2i(0, -768, 640, 384), Rect2i(640, -768, 640, 384), Rect2i(1280, -768, 640, 384), Rect2i(1920, -768, 640, 384), Rect2i(2560, -768, 640, 384)]
+zones = [Rect2i(0, 0, 640, 384), Rect2i(640, 0, 640, 384), Rect2i(1280, 0, 640, 384), Rect2i(1920, 0, 640, 384), Rect2i(2560, -384, 640, 768), Rect2i(1920, -384, 640, 384), Rect2i(1280, -384, 640, 384), Rect2i(640, -384, 640, 384), Rect2i(0, -768, 640, 768), Rect2i(640, -768, 640, 384), Rect2i(1280, -768, 640, 384), Rect2i(1920, -768, 640, 384), Rect2i(2560, -768, 640, 384)]
 
 [node name="FlyEnemy2" parent="." instance=ExtResource("3_170ti")]
 position = Vector2(1089, -614)
