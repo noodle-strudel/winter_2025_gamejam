@@ -33,7 +33,11 @@ var health = 3
 var invulnerable: bool = false
 
 # keeps track of what state the player was in last
-var prev_state: int = 0
+var prev_state := 0
+var prev_surface := 0
+
+# So the player can climb up onto the ground from the wall, without having a seziure
+var ledge_catch = 0
 
 # Possible states for the player
 enum STATE {
@@ -45,15 +49,23 @@ enum STATE {
 	DEFEAT   # Defeated State
 }
 
+enum SURFACE {
+	FLOOR,
+	LEFT,
+	RIGHT,
+	CEILING,
+	AIR
+}
+
 # Controls the state of the player and exports it to the inspector
 # When adding a new state, make sure to iterate the second argument!
-@export_range(0, 4, 1, "suffix:state") var state = STATE.NORMAL
+@export_range(0, 5, 1, "suffix:state") var state = STATE.NORMAL
 
 func _physics_process(delta: float) -> void:
 	if debug:
-		if is_on_wall_only():
+		if on_wall():
 			$AnimatedSprite2D.modulate = Color.RED 
-		elif is_on_ceiling_only():
+		elif is_ceiling_climbing():
 			$AnimatedSprite2D.modulate = Color.BLUE
 		else: 
 			$AnimatedSprite2D.modulate = Color.WHITE
@@ -73,10 +85,49 @@ func _physics_process(delta: float) -> void:
 	
 	animate()
 	
+	# Better ways to do this; I'm too tired to care
+	$TonguePath.visible = state in [STATE.ATTACK, STATE.GRAPPLE]
+	
 	# Last
 	prev_vel = velocity
+	prev_surface = get_surface()
+
+func get_surface():
+	# Prioritize walls, unless we're somehow touching BOTH walls
+	# Not that it'd come up in the current state of the game
+	# But if it did, it may be good to change it. Like to take input into account.
+	var side = 0
+	if len($RightTerrainDetector.get_overlapping_bodies()) > 0:
+		side += 1
+	if len($LeftTerrainDetector.get_overlapping_bodies()) > 0:
+		side -= 1
+	
+	if side == 1:
+		return SURFACE.RIGHT
+	elif side == -1:
+		return SURFACE.LEFT
+	else:
+		if is_on_floor():
+			return SURFACE.FLOOR
+		return SURFACE.AIR
+	
+	if is_on_ceiling():
+		return SURFACE.CEILING
+	
+
+# Not to be confused with is_on_wall(). They're a little different, and I hope this one works better.
+func on_wall():
+	return get_surface() in [SURFACE.RIGHT, SURFACE.LEFT]
+
+func is_climbing():
+	return get_surface() in [SURFACE.RIGHT, SURFACE.LEFT, SURFACE.CEILING]
+	
+func is_ceiling_climbing():
+	return state == STATE.CLIMB and get_surface() == SURFACE.CEILING
 
 func normal_state(delta: float) -> void:
+	position.x += ledge_catch
+	
 	if Input.is_action_just_pressed("attack"):
 		mum_tongue.monitorable = true
 		mum_tongue.monitoring = true
@@ -85,17 +136,19 @@ func normal_state(delta: float) -> void:
 		state = STATE.ATTACK
 		return
 	
-	if is_on_wall_only() and not empty_stamina:
+	if on_wall() and not empty_stamina:
 		prev_state = state
 		state = STATE.CLIMB
 		return
 		
 	# Add the gravity.
-	if not is_on_floor():
+	if get_surface() != SURFACE.FLOOR:
 		velocity.y += GRAVITY * delta
+	else:
+		ledge_catch = 0
 
 	# Handle jump.
-	if Input.is_action_just_pressed("jump") and is_on_floor():
+	if Input.is_action_just_pressed("jump") and get_surface() == SURFACE.FLOOR:
 		velocity.y = JUMP_VELOCITY
 		
 	# moves the tongue 45 degrees up
@@ -109,14 +162,14 @@ func normal_state(delta: float) -> void:
 	var direction := Input.get_axis("left", "right")
 	if direction:
 		velocity.x = direction * SPEED
-		
 	else:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 	
+	flip(velocity.x)
 	move_and_slide()
 
 func attack_state(delta: float) -> void:
-	if is_on_wall_only() and not empty_stamina:
+	if on_wall() and not empty_stamina:
 		tongue_attack.progress_ratio = 0
 		tongue_attack.visible = false
 		prev_state = state
@@ -126,11 +179,11 @@ func attack_state(delta: float) -> void:
 	tongue_attack.visible = true
 	
 	# Add the gravity.
-	if not is_on_floor() and not is_on_wall():
+	if get_surface() != SURFACE.FLOOR:
 		velocity.y += GRAVITY * delta
 	
 	# Handle jump.
-	if Input.is_action_just_pressed("jump") and is_on_floor():
+	if Input.is_action_just_pressed("jump") and get_surface() == SURFACE.FLOOR:
 		velocity.y = JUMP_VELOCITY
 	
 	tongue_attack.progress_ratio = clamp(tongue_attack.progress_ratio + 0.03, 0, 1)
@@ -151,16 +204,20 @@ func attack_state(delta: float) -> void:
 		velocity.x = direction * SPEED
 	else:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
+		
+	flip(velocity.x)
 	move_and_slide()
 
 func climb_state(_delta: float) -> void:
-	if (not is_on_wall() and not is_on_ceiling()) or empty_stamina:
+	anim.rotation_degrees = 0
+	if (not is_climbing()) or empty_stamina:
 		if prev_state == STATE.HIT:
 			prev_state = STATE.CLIMB
 			state = STATE.HIT
 		else:
 			prev_state = state
 			state = STATE.NORMAL
+		flip_vert(1)
 		return
 	
 	# Handle jump. (make sure to add a directional aspect, so user jumps OFF of wall)
@@ -172,14 +229,35 @@ func climb_state(_delta: float) -> void:
 			prev_state = state
 			state = STATE.NORMAL
 		velocity.y = JUMP_VELOCITY
+		flip_vert(-1)
 		return
-		
+	
+	var surf = get_surface()
 	var direction := Vector2(int(Input.get_axis("left", "right")), int(Input.get_axis("up", "down")))
 	if direction:
 		velocity = direction * CLIMB_SPEED
+		if surf == SURFACE.RIGHT and not direction.x < 0:
+			ledge_catch = 1
+		elif surf == SURFACE.LEFT and not direction.x > 0:
+			ledge_catch = -1
+		else:
+			ledge_catch = 0
 	else:
+		ledge_catch = 0
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 		velocity.y = move_toward(velocity.y, 0, SPEED)
+	
+	match get_surface():
+		SURFACE.CEILING:
+			flip(velocity.x)
+			flip_vert(-1)
+		SURFACE.RIGHT:
+			anim.rotation_degrees = -90
+			flip(-velocity.y)
+		SURFACE.LEFT:
+			anim.rotation_degrees = 90
+			flip(velocity.y)
+	
 	move_and_slide()
 	
 
@@ -241,6 +319,7 @@ func grapple_state(delta: float) -> void:
 		prev_state = state
 		state = STATE.NORMAL
 	
+	flip(velocity.x)
 	move_and_slide()
 
 # Hit state, cant attack and can only run, jump and climb
@@ -274,6 +353,7 @@ func hit_state(delta):
 	else:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 	
+	flip(velocity.x)
 	move_and_slide()
 	
 func _on_mum_tongue_area_entered(area: Area2D) -> void:
@@ -301,22 +381,19 @@ func animate() -> void:
 	# Goodness did this turn out janky
 	# Definitely should have separated the logic into the different states
 	# Might refactor all the state stuff at some point, we'll see
-	var surface = "floor"
-	if is_on_ceiling():
-		surface = "ceiling"
-	if is_on_wall():
-		surface = "wall"
+	
+	var surf = get_surface()
 	
 	# Fix weird (literal) edge cases
 	var vel = Vector2.ZERO
 	vel.x = min(velocity.x, prev_vel.x)
 	vel.y = min(velocity.y, prev_vel.y)
 	
-	var relevant_vel = vel.y if surface == "wall" else vel.x
+	var relevant_vel = vel.y if on_wall() else vel.x
 	
 	### Play the animations
 	var vertical_threshold = 50
-	if is_on_floor() or is_on_ceiling() or is_on_wall():
+	if surf != SURFACE.AIR:
 		if relevant_vel == 0:
 			anim.play("idle")
 		else:
@@ -330,36 +407,46 @@ func animate() -> void:
 		else:
 			anim.play("air_neutral")
 	
-	### Orient the sprite properly
-	var right_wall = false
-	if len($RightTerrainDetector.get_overlapping_bodies()) > 0 and surface == "wall":
-		right_wall = true
-	if surface == "wall":
-		if right_wall:
-			anim.rotation_degrees = -90
-		else:
-			anim.rotation_degrees = 90
-	else:
-		anim.rotation_degrees = 0
+	#### Orient the sprite properly
+	#match surf:
+		#SURFACE.RIGHT:
+			#anim.rotation_degrees = -90
+		#SURFACE.LEFT:
+			#anim.rotation_degrees = 90
+		#_:
+			#anim.rotation_degrees = 0
+#
+	#if vel:
+		## only recalculate the left/right sprite direction if there is x velocity
+		#if vel.x:
+			#var s = 1
+			#if relevant_vel < 0:
+				#s = -1
+			#if surf == SURFACE.RIGHT:
+				#s *= -1
+			#for child in get_children():
+				#if child is Node2D and not child.is_in_group("noflip"):
+					#child.scale.x = abs(child.scale.x) * s
+		#
+		#var s2 = -1 if surf == SURFACE.CEILING else 1
+		#for child in get_children():
+			#if child is Node2D and child.name != "TonguePath" and not child.is_in_group("noflip"):
+				#child.scale.y = abs(child.scale.y) * s2
 
-	if vel:
-		
-		# only recalculate the left/right sprite direction if there is x velocity
-		if vel.x:
-			var s = 1
-			if relevant_vel < 0:
-				s = -1
-			if right_wall:
-				s *= -1
-			for child in get_children():
-				if child is Node2D and not child.is_in_group("noflip"):
-					child.scale.x = abs(child.scale.x) * s
-		
-		var s2 = -1 if surface == "ceiling" else 1
-		for child in get_children():
-			if child is Node2D and child.name != "TonguePath" and not child.is_in_group("noflip"):
-				child.scale.y = abs(child.scale.y) * s2
+func flip(vel):
+	if vel == 0:
+		return
+	# Gives 1 or 0
+	var s = vel / abs(vel)
+	
+	for child in get_children():
+		if child is Node2D and not child.is_in_group("noflip"):
+			child.scale.x = abs(child.scale.x) * s
 
+func flip_vert(factor):
+	for child in get_children():
+		if child is Node2D and child.name != "TonguePath" and not child.is_in_group("noflip"):
+			child.scale.y = abs(child.scale.y) * factor
 
 func take_damage(dmg):
 	health -= dmg

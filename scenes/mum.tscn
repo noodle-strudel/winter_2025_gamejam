@@ -9,7 +9,7 @@
 size = Vector2(58, 56)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0v8ah"]
-size = Vector2(4, 56)
+size = Vector2(8, 56)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_iy4lk"]
 atlas = ExtResource("2_m7s8v")
@@ -229,7 +229,16 @@ collision_layer = 0
 collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RightTerrainDetector" groups=["noflip"]]
-position = Vector2(32, -28)
+position = Vector2(31, -28)
+shape = SubResource("RectangleShape2D_0v8ah")
+
+[node name="LeftTerrainDetector" type="Area2D" parent="." groups=["noflip"]]
+position = Vector2(0, 28)
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftTerrainDetector" groups=["noflip"]]
+position = Vector2(-29, -28)
 shape = SubResource("RectangleShape2D_0v8ah")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
