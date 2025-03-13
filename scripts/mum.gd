@@ -18,6 +18,7 @@ signal player_defeated
 @export var JUMP_VELOCITY = -600.0
 @export var GRAVITY = 1500
 @export var KNOCKBACK = -1000
+@export var DEACCEL = 300.0
 
 @export var effective_size = Vector2(64, 64)
 @export var debug = true
@@ -39,8 +40,7 @@ var prev_surface := 0
 # So the player can climb up onto the ground from the wall, without having a seziure
 var ledge_catch = 0
 
-var deaccel = 300.0
-var slow_deaccel
+var deaccel_factor = 1.0
 
 # Possible states for the player
 enum STATE {
@@ -130,6 +130,9 @@ func is_ceiling_climbing():
 	return state == STATE.CLIMB and get_surface() == SURFACE.CEILING
 
 func normal_state(delta: float) -> void:
+	if deaccel_factor < 1.0:
+		deaccel_factor = min(deaccel_factor + delta, 1.0)
+	
 	position.y -= ledge_catch
 	position.x += ledge_catch
 	
@@ -168,7 +171,7 @@ func normal_state(delta: float) -> void:
 	if direction:
 		velocity.x = direction * SPEED
 	else:
-		velocity.x = move_toward(velocity.x, 0, SPEED)
+		velocity.x = move_toward(velocity.x, 0, DEACCEL * deaccel_factor)
 	
 	flip(velocity.x)
 	move_and_slide()
@@ -208,7 +211,7 @@ func attack_state(delta: float) -> void:
 	if direction:
 		velocity.x = direction * SPEED
 	else:
-		velocity.x = move_toward(velocity.x, 0, SPEED)
+		velocity.x = move_toward(velocity.x, 0, DEACCEL)
 		
 	flip(velocity.x)
 	move_and_slide()
@@ -226,8 +229,16 @@ func climb_state(_delta: float) -> void:
 		flip_vert(1)
 		return
 	
-	# Handle jump. (make sure to add a directional aspect, so user jumps OFF of wall)
-	if Input.is_action_just_pressed("jump"):
+	# Handle jump
+	var jump = Input.is_action_just_pressed("jump")
+	if Input.is_action_just_pressed("right") and surf == SURFACE.LEFT:
+		jump = true
+	if Input.is_action_just_pressed("left") and surf == SURFACE.RIGHT:
+		jump = true
+	if Input.is_action_just_pressed("down") and surf == SURFACE.CEILING:
+		jump = true
+	
+	if jump:
 		prev_state = state
 		if prev_state == STATE.HIT:
 			state = STATE.HIT
@@ -236,12 +247,15 @@ func climb_state(_delta: float) -> void:
 		# Apply jump force
 		match surf:
 			SURFACE.LEFT:
-				velocity.x = -JUMP_VELOCITY * 3
+				velocity.x = -JUMP_VELOCITY
+				deaccel_factor = 0.1
 			SURFACE.RIGHT:
-				velocity.x = JUMP_VELOCITY * 3
+				velocity.x = JUMP_VELOCITY
+				deaccel_factor = 0.1
 			SURFACE.CEILING:
 				velocity.y = -JUMP_VELOCITY / 2
 		flip_vert(1)
+		move_and_slide()
 		return
 
 	var direction := Vector2(int(Input.get_axis("left", "right")), int(Input.get_axis("up", "down")))
@@ -276,14 +290,14 @@ func climb_state(_delta: float) -> void:
 # Manages stamina and stanima bar
 func manage_stamina():
 	if state == STATE.CLIMB:
-		stamina -= 0
+		stamina -= 0.3
 		full_stamina = false
 		if stamina <= 0:
 			empty_stamina = true
 			$StaminaCooldown.start()
 			
 	elif state == STATE.NORMAL and not full_stamina and not empty_stamina:
-		stamina += 0.2
+		stamina += 0.5
 		if stamina >= 100:
 			full_stamina = true
 	
@@ -418,32 +432,6 @@ func animate() -> void:
 			anim.play("jump")
 		else:
 			anim.play("air_neutral")
-	
-	#### Orient the sprite properly
-	#match surf:
-		#SURFACE.RIGHT:
-			#anim.rotation_degrees = -90
-		#SURFACE.LEFT:
-			#anim.rotation_degrees = 90
-		#_:
-			#anim.rotation_degrees = 0
-#
-	#if vel:
-		## only recalculate the left/right sprite direction if there is x velocity
-		#if vel.x:
-			#var s = 1
-			#if relevant_vel < 0:
-				#s = -1
-			#if surf == SURFACE.RIGHT:
-				#s *= -1
-			#for child in get_children():
-				#if child is Node2D and not child.is_in_group("noflip"):
-					#child.scale.x = abs(child.scale.x) * s
-		#
-		#var s2 = -1 if surf == SURFACE.CEILING else 1
-		#for child in get_children():
-			#if child is Node2D and child.name != "TonguePath" and not child.is_in_group("noflip"):
-				#child.scale.y = abs(child.scale.y) * s2
 
 func flip(vel):
 	if vel == 0:
