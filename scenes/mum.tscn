@@ -1,9 +1,10 @@
-[gd_scene load_steps=35 format=3 uid="uid://cw7cwr4lfsvse"]
+[gd_scene load_steps=36 format=3 uid="uid://cw7cwr4lfsvse"]
 
 [ext_resource type="Script" path="res://scripts/mum.gd" id="1_7ljp4"]
 [ext_resource type="Texture2D" uid="uid://ben8hdhrrhc2a" path="res://sprites/frog.png" id="2_m7s8v"]
 [ext_resource type="Texture2D" uid="uid://cpbxpxoa647k" path="res://icon.svg" id="2_xhba6"]
 [ext_resource type="AudioStream" uid="uid://c4nk8xc528fx5" path="res://sound/tongue.wav" id="3_6nknk"]
+[ext_resource type="AudioStream" uid="uid://wdmg60t22w8w" path="res://sound/jump.wav" id="5_d3dy1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hkcyo"]
 size = Vector2(58, 56)
@@ -320,6 +321,9 @@ polygon = PackedVector2Array(-7.91304, -7.66667, -11.3043, 0, -7.91304, 7.66667,
 
 [node name="RemoteTransform2D" type="RemoteTransform2D" parent="TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower"]
 remote_path = NodePath("../MumTongue/CollisionShape2D")
+
+[node name="JumpAudio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5_d3dy1")
 
 [connection signal="timeout" from="StaminaCooldown" to="." method="_on_stamina_cooldown_timeout"]
 [connection signal="body_entered" from="HurtBox" to="." method="_on_hurt_box_body_entered"]

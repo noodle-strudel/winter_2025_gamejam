@@ -20,6 +20,8 @@ var player: CharacterBody2D
 var player_in_area: bool = false
 
 func take_damage():
+	if not $DamageSound.is_playing():
+		$DamageSound.play()
 	taking_damage = true
 	health -= 1
 	if health <= 0:

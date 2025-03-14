@@ -251,7 +251,7 @@ texture = ExtResource("10_6mj0f")
 
 [node name="Music" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("11_ysosq")
-volume_db = -6.093
+volume_db = -14.328
 autoplay = true
 
 [connection signal="player_defeated" from="Mum" to="." method="_on_mum_player_defeated"]

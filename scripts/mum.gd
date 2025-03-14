@@ -155,6 +155,7 @@ func normal_state(delta: float) -> void:
 	# Handle jump.
 	if Input.is_action_just_pressed("jump") and get_surface() == SURFACE.FLOOR:
 		velocity.y = JUMP_VELOCITY
+		$JumpAudio.play()
 		
 	# moves the tongue 45 degrees up
 	if Input.is_action_pressed("up"):
@@ -228,6 +229,7 @@ func climb_state(_delta: float) -> void:
 	
 	# Handle jump. (make sure to add a directional aspect, so user jumps OFF of wall)
 	if Input.is_action_just_pressed("jump"):
+		$JumpAudio.play()
 		prev_state = state
 		if prev_state == STATE.HIT:
 			state = STATE.HIT
@@ -481,5 +483,6 @@ func _on_hurt_box_body_entered(body: Node2D) -> void:
 
 func _on_hurt_cooldown_timeout() -> void:
 	invulnerable = false
+	state = STATE.NORMAL
 	#set_collision_mask_value(2, true)
 	$AnimatedSprite2D.modulate = Color.WHITE
