@@ -18,7 +18,7 @@ func _process(delta: float) -> void:
 
 func _on_mum_player_take_damage(damage) -> void:
 	if damage >= player_health:
-		for child in health_container:
+		for child in health_container.get_children():
 			child.queue_free()
 	else:
 		var health_icons = health_container.get_children()
