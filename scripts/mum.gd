@@ -198,7 +198,7 @@ func attack_state(delta: float) -> void:
 	
 	tongue_attack.progress_ratio = clamp(tongue_attack.progress_ratio + 0.04, 0, 1)
 	
-	if tongue_attack.progress_ratio == 1:
+	if tongue_attack.progress_ratio >= 1:
 		tongue_attack.progress_ratio = 0
 		mum_tongue.monitorable = false
 		mum_tongue.monitoring = false

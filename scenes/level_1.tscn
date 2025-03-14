@@ -198,7 +198,7 @@ texture = ExtResource("2_vdr71")
 centered = false
 
 [node name="Mum" parent="." instance=ExtResource("1_gt3vi")]
-position = Vector2(216, 218)
+position = Vector2(215, 206)
 debug = false
 
 [node name="BeetleEnemy" parent="." instance=ExtResource("2_ok7bk")]
