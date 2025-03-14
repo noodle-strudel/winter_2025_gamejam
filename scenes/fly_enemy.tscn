@@ -1,7 +1,8 @@
-[gd_scene load_steps=10 format=3 uid="uid://bbfixdd0dm6cd"]
+[gd_scene load_steps=11 format=3 uid="uid://bbfixdd0dm6cd"]
 
 [ext_resource type="Script" path="res://scripts/fly_enemy.gd" id="1_oks2l"]
 [ext_resource type="Texture2D" uid="uid://srec64xst7ey" path="res://sprites/fly.png" id="2_lldnl"]
+[ext_resource type="AudioStream" uid="uid://d2o4nxoiai06k" path="res://sound/monster_attack.mp3" id="3_qs24t"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_g274v"]
 radius = 24.0
@@ -75,6 +76,10 @@ sprite_frames = SubResource("SpriteFrames_k6puk")
 animation = &"Fly"
 autoplay = "Fly"
 frame_progress = 0.936718
+
+[node name="DamageSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_qs24t")
+pitch_scale = 2.33
 
 [connection signal="body_entered" from="EntityDetector" to="." method="_on_entity_detector_body_entered"]
 [connection signal="body_exited" from="EntityDetector" to="." method="_on_entity_detector_body_exited"]

@@ -1,7 +1,8 @@
-[gd_scene load_steps=13 format=3 uid="uid://cm2ivsqmkkqlk"]
+[gd_scene load_steps=14 format=3 uid="uid://cm2ivsqmkkqlk"]
 
 [ext_resource type="Script" path="res://scripts/beetle_enemy.gd" id="1_stwso"]
 [ext_resource type="Texture2D" uid="uid://chj2e66gwe5ov" path="res://sprites/beetle.png" id="2_m6yt3"]
+[ext_resource type="AudioStream" uid="uid://d2o4nxoiai06k" path="res://sound/monster_attack.mp3" id="3_tp10r"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_55xhr"]
 size = Vector2(129, 56)
@@ -253,6 +254,9 @@ position = Vector2(5, -21)
 texture = ExtResource("2_m6yt3")
 hframes = 4
 frame = 1
+
+[node name="DamageSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_tp10r")
 
 [connection signal="body_entered" from="EntityDetector" to="." method="_on_entity_detector_body_entered"]
 [connection signal="body_exited" from="EntityDetector" to="." method="_on_entity_detector_body_exited"]

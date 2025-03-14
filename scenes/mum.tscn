@@ -1,9 +1,10 @@
-[gd_scene load_steps=35 format=3 uid="uid://cw7cwr4lfsvse"]
+[gd_scene load_steps=39 format=3 uid="uid://cw7cwr4lfsvse"]
 
 [ext_resource type="Script" path="res://scripts/mum.gd" id="1_7ljp4"]
 [ext_resource type="Texture2D" uid="uid://ben8hdhrrhc2a" path="res://sprites/frog.png" id="2_m7s8v"]
-[ext_resource type="Texture2D" uid="uid://cpbxpxoa647k" path="res://icon.svg" id="2_xhba6"]
 [ext_resource type="AudioStream" uid="uid://c4nk8xc528fx5" path="res://sound/tongue.wav" id="3_6nknk"]
+[ext_resource type="Texture2D" uid="uid://cy2jin1ruvfo8" path="res://sprites/tongue.png" id="5_256v8"]
+[ext_resource type="AudioStream" uid="uid://wdmg60t22w8w" path="res://sound/jump.wav" id="5_d3dy1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hkcyo"]
 size = Vector2(58, 56)
@@ -86,6 +87,10 @@ region = Rect2(1500, 0, 100, 76)
 [sub_resource type="AtlasTexture" id="AtlasTexture_gqnkp"]
 atlas = ExtResource("2_m7s8v")
 region = Rect2(0, 152, 100, 76)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_icqu0"]
+atlas = ExtResource("2_m7s8v")
+region = Rect2(0, 228, 100, 76)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_n7m0c"]
 atlas = ExtResource("2_m7s8v")
@@ -180,6 +185,14 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_icqu0")
+}],
+"loop": true,
+"name": &"tongue",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_n7m0c")
 }, {
 "duration": 1.0,
@@ -204,20 +217,25 @@ size = Vector2(64, 58)
 
 [sub_resource type="Curve2D" id="Curve2D_gbwyh"]
 _data = {
-"points": PackedVector2Array(0, 0, 0, 0, 16, -32, 0, 0, 0, 0, 128, -32, 0, 0, 0, 0, 16, -32)
+"points": PackedVector2Array(0, 0, 0, 0, 16, -32, 0, 0, 0, 0, 160, -32, 0, 0, 0, 0, 16, -32)
 }
 point_count = 3
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_8oy6e"]
 
+[sub_resource type="Gradient" id="Gradient_hq5or"]
+offsets = PackedFloat32Array(0.142857, 0.147059, 1)
+colors = PackedColorArray(0.737255, 0.0745098, 0.607843, 1, 0.937255, 0.937255, 0.937255, 0, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_k4xck"]
+gradient = SubResource("Gradient_hq5or")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+
 [node name="Mum" type="CharacterBody2D"]
 process_mode = 1
 collision_mask = 6
 script = ExtResource("1_7ljp4")
-
-[node name="Sprite2D" type="Sprite2D" parent="."]
-visible = false
-texture = ExtResource("2_xhba6")
 
 [node name="BodyCollision" type="CollisionShape2D" parent="."]
 position = Vector2(1, 0)
@@ -243,7 +261,7 @@ shape = SubResource("RectangleShape2D_0v8ah")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_ruqhk")
-animation = &"idle"
+animation = &"tongue"
 autoplay = "idle"
 
 [node name="UI" type="Control" parent="."]
@@ -293,6 +311,13 @@ shape = SubResource("RectangleShape2D_ishdc")
 [node name="TonguePath" type="Node2D" parent="."]
 editor_description = "This one is at the origin of the character so it flips properly"
 
+[node name="Line2D" type="Line2D" parent="TonguePath"]
+points = PackedVector2Array(144, -22, 12, 0)
+width = 8.0
+default_color = Color(1, 0.262745, 1, 1)
+texture = ExtResource("5_256v8")
+texture_mode = 2
+
 [node name="TonguePathOrigin" type="Node2D" parent="TonguePath"]
 position = Vector2(16, -4)
 
@@ -312,14 +337,16 @@ monitorable = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower/MumTongue"]
 shape = SubResource("CircleShape2D_8oy6e")
 
-[node name="Polygon2D" type="Polygon2D" parent="TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower/MumTongue"]
+[node name="Polygon2D" type="Sprite2D" parent="TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower/MumTongue"]
 position = Vector2(0, -1.90735e-06)
 scale = Vector2(0.884615, 0.913043)
-color = Color(0.914065, 0.281827, 0.232554, 1)
-polygon = PackedVector2Array(-7.91304, -7.66667, -11.3043, 0, -7.91304, 7.66667, 0, 10.9524, 7.91304, 7.66667, 11.3043, 0, 7.91304, -7.66667, 0, -11)
+texture = SubResource("GradientTexture2D_k4xck")
 
 [node name="RemoteTransform2D" type="RemoteTransform2D" parent="TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower"]
 remote_path = NodePath("../MumTongue/CollisionShape2D")
+
+[node name="JumpAudio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5_d3dy1")
 
 [connection signal="timeout" from="StaminaCooldown" to="." method="_on_stamina_cooldown_timeout"]
 [connection signal="body_entered" from="HurtBox" to="." method="_on_hurt_box_body_entered"]

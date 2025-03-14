@@ -90,6 +90,7 @@ func _physics_process(delta: float) -> void:
 	
 	# Better ways to do this; I'm too tired to care
 	$TonguePath.visible = state in [STATE.ATTACK, STATE.GRAPPLE]
+	$TonguePath/Line2D.set_point_position(0, (mum_tongue.global_position - global_position) * $AnimatedSprite2D.scale)
 	
 	# Last
 	prev_vel = velocity
@@ -158,6 +159,7 @@ func normal_state(delta: float) -> void:
 	# Handle jump.
 	if Input.is_action_just_pressed("jump") and get_surface() == SURFACE.FLOOR:
 		velocity.y = JUMP_VELOCITY
+		$JumpAudio.play()
 		
 	# moves the tongue 45 degrees up
 	if Input.is_action_pressed("up"):
@@ -194,7 +196,7 @@ func attack_state(delta: float) -> void:
 	if Input.is_action_just_pressed("jump") and get_surface() == SURFACE.FLOOR:
 		velocity.y = JUMP_VELOCITY
 	
-	tongue_attack.progress_ratio = clamp(tongue_attack.progress_ratio + 0.03, 0, 1)
+	tongue_attack.progress_ratio = clamp(tongue_attack.progress_ratio + 0.04, 0, 1)
 	
 	if tongue_attack.progress_ratio == 1:
 		tongue_attack.progress_ratio = 0
@@ -229,6 +231,9 @@ func climb_state(_delta: float) -> void:
 		flip_vert(1)
 		return
 	
+	# Handle jump. (make sure to add a directional aspect, so user jumps OFF of wall)
+	if Input.is_action_just_pressed("jump"):
+		$JumpAudio.play()
 	# Handle jump
 	var jump = Input.is_action_just_pressed("jump")
 	if Input.is_action_just_pressed("right") and surf == SURFACE.LEFT:
@@ -328,7 +333,7 @@ func grapple_state(delta: float) -> void:
 		grapple_path_follower.add_child(remote_transform)
 		get_parent().add_child(grapple_path)
 	
-	grapple_path_follower.progress += 5
+	grapple_path_follower.progress += 7
 	
 	if is_on_wall():
 		grapple_path.queue_free()
@@ -418,6 +423,9 @@ func animate() -> void:
 	var relevant_vel = vel.y if on_wall() else vel.x
 	
 	### Play the animations
+	if state in [STATE.GRAPPLE, STATE.ATTACK]:
+		anim.play("tongue")
+		return
 	var vertical_threshold = 50
 	if surf != SURFACE.AIR:
 		if relevant_vel == 0:
@@ -469,5 +477,6 @@ func _on_hurt_box_body_entered(body: Node2D) -> void:
 
 func _on_hurt_cooldown_timeout() -> void:
 	invulnerable = false
+	state = STATE.NORMAL
 	#set_collision_mask_value(2, true)
 	$AnimatedSprite2D.modulate = Color.WHITE
