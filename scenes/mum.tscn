@@ -307,6 +307,7 @@ position = Vector2(3, 0)
 shape = SubResource("RectangleShape2D_ishdc")
 
 [node name="HurtCooldown" type="Timer" parent="."]
+one_shot = true
 
 [node name="TonguePath" type="Node2D" parent="."]
 editor_description = "This one is at the origin of the character so it flips properly"

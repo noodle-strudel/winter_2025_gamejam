@@ -42,6 +42,8 @@ var ledge_catch = 0
 
 var deaccel_factor = 1.0
 
+var time = 0
+	
 # Possible states for the player
 enum STATE {
 	NORMAL,  # Walk and Jump State
@@ -178,10 +180,29 @@ func normal_state(delta: float) -> void:
 	flip(velocity.x)
 	move_and_slide()
 
+func eat_food() -> void:
+	if eating:
+		eating = false
+		var food = get_node(tongue_remote_transform.remote_path)
+		food.handle_death()
+
+func extend_tongue() -> void:
+	time += 1
+	tongue_attack.progress_ratio = clamp(tongue_attack.progress_ratio + 0.04, 0, 1)
+	if tongue_attack.progress_ratio >= 1:
+		time = 0
+		tongue_attack.progress_ratio = 0
+		mum_tongue.monitorable = false
+		mum_tongue.monitoring = false
+		tongue_attack.visible = false
+		eat_food()
+		state = STATE.NORMAL
+	
 func attack_state(delta: float) -> void:
 	if on_wall() and not empty_stamina:
 		tongue_attack.progress_ratio = 0
 		tongue_attack.visible = false
+		eat_food()
 		prev_state = state
 		state = STATE.CLIMB
 		return
@@ -196,18 +217,7 @@ func attack_state(delta: float) -> void:
 	if Input.is_action_just_pressed("jump") and get_surface() == SURFACE.FLOOR:
 		velocity.y = JUMP_VELOCITY
 	
-	tongue_attack.progress_ratio = clamp(tongue_attack.progress_ratio + 0.04, 0, 1)
-	
-	if tongue_attack.progress_ratio >= 1:
-		tongue_attack.progress_ratio = 0
-		mum_tongue.monitorable = false
-		mum_tongue.monitoring = false
-		tongue_attack.visible = false
-		if eating:
-			eating = false
-			var food = get_node(tongue_remote_transform.remote_path)
-			food.handle_death()
-		state = STATE.NORMAL
+	extend_tongue()
 	
 	var direction := Input.get_axis("left", "right")
 	if direction:
@@ -335,14 +345,14 @@ func grapple_state(delta: float) -> void:
 	
 	grapple_path_follower.progress += 7
 	
-	if is_on_wall():
-		grapple_path.queue_free()
+	if is_on_wall() or is_on_ceiling():
+		grapple_path.call_deferred("queue_free")
 		tongue_attack.progress_ratio = 0
 		prev_state = state
 		state = STATE.CLIMB
 	
 	if grapple_path_follower.progress_ratio == 1:
-		grapple_path.queue_free()
+		grapple_path.call_deferred("queue_free")
 		tongue_attack.progress_ratio = 0
 		
 		# add some jump velocity as a test
