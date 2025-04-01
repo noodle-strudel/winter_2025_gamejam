@@ -331,7 +331,7 @@ position = Vector2(16, -32)
 
 [node name="MumTongue" type="Area2D" parent="TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower"]
 collision_layer = 16
-collision_mask = 46
+collision_mask = 110
 monitoring = false
 monitorable = false
 

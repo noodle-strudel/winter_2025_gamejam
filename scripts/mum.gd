@@ -17,7 +17,7 @@ signal player_defeated
 @export var CLIMB_SPEED = 100.0
 @export var JUMP_VELOCITY = -600.0
 @export var GRAVITY = 1500
-@export var KNOCKBACK = -1000
+@export var KNOCKBACK = -600
 @export var DEACCEL = 300.0
 
 @export var effective_size = Vector2(64, 64)
@@ -30,8 +30,11 @@ var grapple_path: Path2D = null
 var grapple_path_follower: PathFollow2D = null
 var eating: bool = false
 var prev_vel = Vector2.ZERO
-var health = 3
+var health = 20
 var invulnerable: bool = false
+
+# currently retracting tongue
+var retracting: bool = false
 
 # keeps track of what state the player was in last
 var prev_state := 0
@@ -97,6 +100,9 @@ func _physics_process(delta: float) -> void:
 	# Last
 	prev_vel = velocity
 	prev_surface = get_surface()
+	for i in get_slide_collision_count():
+		var collision = get_slide_collision(i)
+		print(collision.get_collider())
 
 func get_surface():
 	if is_on_ceiling():
@@ -188,15 +194,26 @@ func eat_food() -> void:
 
 func extend_tongue() -> void:
 	time += 1
-	tongue_attack.progress_ratio = clamp(tongue_attack.progress_ratio + 0.04, 0, 1)
-	if tongue_attack.progress_ratio >= 1:
+	if retracting:
+		tongue_attack.progress_ratio = clamp(tongue_attack.progress_ratio - 0.04, 0, 1)
+		mum_tongue.monitorable = false
+		mum_tongue.monitoring = false
+	else:
+		tongue_attack.progress_ratio = clamp(tongue_attack.progress_ratio + 0.04, 0, 1)
+		
+	if tongue_attack.progress_ratio <= 0 or tongue_attack.progress_ratio >= 1:
 		time = 0
-		tongue_attack.progress_ratio = 0
+		if tongue_attack.progress_ratio >= 1:
+			eat_food()
+			tongue_attack.progress_ratio = 0
+		else:
+			retracting = false
 		mum_tongue.monitorable = false
 		mum_tongue.monitoring = false
 		tongue_attack.visible = false
-		eat_food()
+			
 		state = STATE.NORMAL
+		
 	
 func attack_state(delta: float) -> void:
 	if on_wall() and not empty_stamina:
@@ -365,8 +382,8 @@ func grapple_state(delta: float) -> void:
 
 # Hit state, cant attack and can only run, jump and climb
 func hit_state(delta):
-	
-	if is_on_wall_only() and not empty_stamina:
+	print("hit!")
+	if on_wall() and not empty_stamina:
 		prev_state = state
 		state = STATE.CLIMB
 		return
@@ -396,11 +413,14 @@ func hit_state(delta):
 	
 	flip(velocity.x)
 	move_and_slide()
-	
+
 func _on_mum_tongue_area_entered(area: Area2D) -> void:
-	if area.name == "EdibleBox" and state == STATE.ATTACK:
-		tongue_remote_transform.remote_path = area.get_parent().get_path()
-		eating = true
+	if STATE.ATTACK:
+		if area.name == "EdibleBox":
+			tongue_remote_transform.remote_path = area.get_parent().get_path()
+			eating = true
+		elif area.name == "UnstickableBarrier":
+			retracting = true
 
 
 func _on_stamina_cooldown_timeout() -> void:

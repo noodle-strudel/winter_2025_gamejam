@@ -1,18 +1,20 @@
-[gd_scene load_steps=14 format=3 uid="uid://cm2ivsqmkkqlk"]
+[gd_scene load_steps=16 format=3 uid="uid://cm2ivsqmkkqlk"]
 
 [ext_resource type="Script" path="res://scripts/beetle_enemy.gd" id="1_stwso"]
 [ext_resource type="Texture2D" uid="uid://chj2e66gwe5ov" path="res://sprites/beetle.png" id="2_m6yt3"]
 [ext_resource type="AudioStream" uid="uid://d2o4nxoiai06k" path="res://sound/monster_attack.mp3" id="3_tp10r"]
+[ext_resource type="PackedScene" uid="uid://cfxewd38pk3ra" path="res://scenes/unstickable_barrier.tscn" id="4_oq66m"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_55xhr"]
-size = Vector2(129, 56)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_fg8tu"]
+radius = 28.0
+height = 131.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dludg"]
-size = Vector2(384, 106)
+size = Vector2(216, 106)
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_m6o4o"]
-radius = 29.0
-height = 136.0
+radius = 30.0
+height = 142.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_nbqvg"]
 size = Vector2(112, 34)
@@ -41,7 +43,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(5, -21)]
+"values": [Vector2(-3, -21)]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
@@ -189,6 +191,9 @@ _data = {
 "walk": SubResource("Animation_bgjxp")
 }
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pdwf2"]
+size = Vector2(528, 106)
+
 [node name="BeetleEnemy" type="CharacterBody2D" groups=["enemy"]]
 process_mode = 1
 collision_layer = 2
@@ -197,8 +202,9 @@ script = ExtResource("1_stwso")
 health = 2
 
 [node name="Hitbox" type="CollisionShape2D" parent="."]
-position = Vector2(2.5, -20)
-shape = SubResource("RectangleShape2D_55xhr")
+position = Vector2(-6.5, -20)
+rotation = 1.57079
+shape = SubResource("CapsuleShape2D_fg8tu")
 
 [node name="Polygon2D" type="Polygon2D" parent="."]
 visible = false
@@ -208,21 +214,23 @@ color = Color(0, 0.741176, 0.756863, 1)
 polygon = PackedVector2Array(-27.6923, -16, -33.2308, -8, -33.2308, 0, -33.2308, 8, -20.9231, 8, -20.9231, 24, -15.3846, 8, -9.84615, 24, -9.84615, 8, -4.30769, 8, -4.30769, 24, 1.23077, 8, 6.76923, 24, 6.76923, 8, 12.3077, 8, 12.3077, 24, 17.8462, 8, 23.3846, 24, 23.3846, 8, 34.3669, 8, 34.3669, -8, 22.1538, -16, 40, -40, 0, -40, -16.6154, -16)
 
 [node name="PlatformGuideL" type="Marker2D" parent="."]
-position = Vector2(-48, 8)
+position = Vector2(-56, 8)
 
 [node name="PlatformGuideR" type="Marker2D" parent="."]
-position = Vector2(48, 8)
+position = Vector2(40, 8)
 
 [node name="EntityDetector" type="Area2D" parent="."]
+position = Vector2(-8, 0)
 collision_layer = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="EntityDetector"]
-position = Vector2(0, -43)
+position = Vector2(-148, -43)
 shape = SubResource("RectangleShape2D_dludg")
 debug_color = Color(0.805342, 0.379349, 0.459398, 0.42)
 metadata/_edit_lock_ = true
 
 [node name="Hurtbox" type="Area2D" parent="."]
+position = Vector2(-8, 0)
 collision_layer = 2
 collision_mask = 16
 
@@ -250,14 +258,33 @@ libraries = {
 autoplay = "walk"
 
 [node name="Beetle" type="Sprite2D" parent="."]
-position = Vector2(5, -21)
+position = Vector2(-3, -21)
 texture = ExtResource("2_m6yt3")
 hframes = 4
 frame = 1
 
 [node name="DamageSound" type="AudioStreamPlayer2D" parent="."]
+position = Vector2(-8, 0)
 stream = ExtResource("3_tp10r")
+
+[node name="UnstickableBarrier" parent="." instance=ExtResource("4_oq66m")]
+position = Vector2(-8, -16)
+
+[node name="CollisionShape2D" parent="UnstickableBarrier" index="0"]
+position = Vector2(-72.5, -5)
+
+[node name="PlayerSensor" type="Area2D" parent="."]
+editor_description = "different from the entity detector because all it does is make the enemy go towards the player, rather than charge at them"
+collision_layer = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerSensor"]
+position = Vector2(0, -43)
+shape = SubResource("RectangleShape2D_pdwf2")
 
 [connection signal="body_entered" from="EntityDetector" to="." method="_on_entity_detector_body_entered"]
 [connection signal="body_exited" from="EntityDetector" to="." method="_on_entity_detector_body_exited"]
 [connection signal="area_entered" from="Hurtbox" to="." method="_on_hurtbox_area_entered"]
+[connection signal="body_entered" from="PlayerSensor" to="." method="_on_player_sensor_body_entered"]
+[connection signal="body_exited" from="PlayerSensor" to="." method="_on_player_sensor_body_exited"]
+
+[editable path="UnstickableBarrier"]
