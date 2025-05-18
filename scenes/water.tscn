@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3 uid="uid://bhx15oamyxwvo"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_q28vv"]
+size = Vector2(64, 64)
+
+[node name="Water" type="Area2D"]
+collision_layer = 0
+collision_mask = 3
+gravity_space_override = 3
+gravity_point_center = Vector2(0, -1)
+gravity_direction = Vector2(0, -1)
+linear_damp_space_override = 3
+linear_damp = 100.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_q28vv")
+
+[node name="Polygon2D" type="Polygon2D" parent="."]
+scale = Vector2(3.2, 3.2)
+color = Color(0.376471, 0.529412, 0.686275, 0.321569)
+polygon = PackedVector2Array(-10, -10, 10, -10, 10, 10, -10, 10)

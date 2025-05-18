@@ -1,18 +1,19 @@
-[gd_scene load_steps=4 format=3 uid="uid://blmy13xva5nmi"]
+[gd_scene load_steps=5 format=4 uid="uid://blmy13xva5nmi"]
 
 [ext_resource type="PackedScene" uid="uid://cm2ivsqmkkqlk" path="res://scenes/beetle_enemy.tscn" id="1_o1ugv"]
 [ext_resource type="PackedScene" uid="uid://cw7cwr4lfsvse" path="res://scenes/mum.tscn" id="2_nm7cy"]
+[ext_resource type="PackedScene" uid="uid://b01cewv7g2g2r" path="res://scenes/water_tile_map.tscn" id="3_jp018"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3g07d"]
-size = Vector2(640, 16)
+size = Vector2(806, 16)
 
 [node name="TestRoom" type="Node2D"]
 
 [node name="BeetleEnemy" parent="." instance=ExtResource("1_o1ugv")]
-position = Vector2(465, 301)
+position = Vector2(465, 296)
 
 [node name="Mum" parent="." instance=ExtResource("2_nm7cy")]
-position = Vector2(102, 199)
+position = Vector2(311, 95)
 
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 position = Vector2(448, 320)
@@ -20,8 +21,11 @@ collision_layer = 4
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
-position = Vector2(-128, 8)
+position = Vector2(-211, 8)
 shape = SubResource("RectangleShape2D_3g07d")
 
 [node name="Polygon2D" type="Polygon2D" parent="StaticBody2D"]
 polygon = PackedVector2Array(-448, 0, 192, 0, 192, 16, -448, 16)
+
+[node name="WaterTileMap" parent="." instance=ExtResource("3_jp018")]
+tile_map_data = PackedByteArray("AAAAAAAAAAAAAAAAAQABAAAAAAAAAAAAAQACAAAAAAAAAAAAAQADAAAAAAAAAAAAAQAEAAAAAAAAAAAAAQAFAAAAAAAAAAAAAQAGAAAAAAAAAAAAAQAHAAAAAAAAAAAAAQAIAAAAAAAAAAAAAQAJAAAAAAAAAAAAAQAJAAEAAAAAAAAAAQAIAAEAAAAAAAAAAQAHAAEAAAAAAAAAAQAGAAEAAAAAAAAAAQAFAAEAAAAAAAAAAQAEAAEAAAAAAAAAAQADAAEAAAAAAAAAAQACAAEAAAAAAAAAAQABAAEAAAAAAAAAAQAAAAEAAAAAAAAAAQAAAAIAAAAAAAAAAQABAAIAAAAAAAAAAQACAAIAAAAAAAAAAQADAAIAAAAAAAAAAQAEAAIAAAAAAAAAAQAFAAIAAAAAAAAAAQAGAAIAAAAAAAAAAQAHAAIAAAAAAAAAAQAIAAIAAAAAAAAAAQAJAAIAAAAAAAAAAQAJAAMAAAAAAAAAAQAIAAMAAAAAAAAAAQAHAAMAAAAAAAAAAQAGAAMAAAAAAAAAAQAFAAMAAAAAAAAAAQAEAAMAAAAAAAAAAQADAAMAAAAAAAAAAQACAAMAAAAAAAAAAQABAAMAAAAAAAAAAQAAAAMAAAAAAAAAAQAAAAQAAAAAAAAAAQABAAQAAAAAAAAAAQACAAQAAAAAAAAAAQADAAQAAAAAAAAAAQAEAAQAAAAAAAAAAQAFAAQAAAAAAAAAAQAGAAQAAAAAAAAAAQAHAAQAAAAAAAAAAQAIAAQAAAAAAAAAAQAJAAQAAAAAAAAAAQAKAP7/AAAAAAAAAQALAAEAAAAAAAAAAQD+/wAAAAAAAAAAAQD+/wMAAAAAAAAAAQA=")

@@ -92,6 +92,7 @@ up={
 2d_physics/layer_4="edible_box"
 2d_physics/layer_5="tongue"
 2d_physics/layer_6="grapple_point"
+2d_physics/layer_7="water"
 
 [rendering]
 
