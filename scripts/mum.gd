@@ -16,7 +16,7 @@ signal player_defeated
 @export var SPEED = 300.0
 @export var CLIMB_SPEED = 100.0
 @export var JUMP_VELOCITY = -600.0
-@export var GRAVITY = get_gravity().y
+@onready var GRAVITY = get_gravity().y
 @export var KNOCKBACK = -600
 @export var DEACCEL = 300.0
 
@@ -45,7 +45,7 @@ var ledge_catch = 0
 
 var deaccel_factor = 1.0
 
-var time = 0
+var time = 0	
 	
 # Possible states for the player
 enum STATE {
@@ -293,9 +293,9 @@ func climb_state(_delta: float) -> void:
 	var direction := Vector2(int(Input.get_axis("left", "right")), int(Input.get_axis("up", "down")))
 	if direction:
 		velocity = direction * CLIMB_SPEED
-		if surf == SURFACE.RIGHT:# and not direction.x < 0:
+		if surf == SURFACE.RIGHT and not direction.x < 0:
 			ledge_catch = 1
-		elif surf == SURFACE.LEFT:# and not direction.x > 0:
+		elif surf == SURFACE.LEFT and not direction.x > 0:
 			ledge_catch = -1
 		else:
 			ledge_catch = 0
