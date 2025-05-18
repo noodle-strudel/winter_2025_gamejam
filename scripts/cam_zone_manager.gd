@@ -2,8 +2,9 @@
 extends Node2D
 class_name CamZoneManager
 
-@export var zones = [Rect2i(0, 0, 640, 320)] # (Array, Rect2)
+@export var zones : Array[Rect2i]
 @export_flags_2d_physics var collision_mask # (int, LAYERS_2D_PHYSICS)
+@export var screen_size := Vector2i(640, 384)
 
 var animate = true
 var current_zone_idx = 0
@@ -18,7 +19,8 @@ func _draw():
 		return
 	
 	for zone in zones:
-		draw_rect(zone, Color.RED, false, 4)# false) TODOGODOT4 Antialiasing argument is missing
+		if screen_size:
+			draw_rect(Rect2i(zone.position * screen_size, zone.size * screen_size), Color.RED, false, 4)
 
 func initizlize_area(region):
 	var area = Area2D.new()
@@ -36,6 +38,10 @@ func _ready():
 		return
 	
 	for i in range(len(zones)):
+		# Set the zones to the correct size
+		zones[i].position *= screen_size
+		zones[i].size *= screen_size
+		
 		var area = initizlize_area(zones[i])
 		area.global_position = zones[i].position + (zones[i].size / 2)
 		#area.connect("body_entered",Callable(self,"_on_player_entered_zone").bind(i))

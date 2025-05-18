@@ -216,7 +216,7 @@ tile_set = ExtResource("4_7v7kb")
 
 [node name="CamZoneManager" type="Node2D" parent="."]
 script = ExtResource("6_xutvh")
-zones = [Rect2i(0, 0, 640, 384), Rect2i(640, 0, 640, 384), Rect2i(1280, 0, 640, 384), Rect2i(1920, 0, 640, 384), Rect2i(2560, -384, 640, 768), Rect2i(1920, -384, 640, 384), Rect2i(1280, -384, 640, 384), Rect2i(640, -384, 640, 384), Rect2i(0, -768, 640, 768), Rect2i(640, -768, 640, 384), Rect2i(1280, -768, 640, 384), Rect2i(1920, -768, 640, 384), Rect2i(2560, -768, 640, 384)]
+zones = Array[Rect2i]([Rect2i(0, 0, 1, 1), Rect2i(1, 0, 1, 1), Rect2i(2, 0, 1, 1), Rect2i(3, 0, 1, 1), Rect2i(4, -1, 1, 2), Rect2i(3, -1, 1, 1), Rect2i(2, -1, 1, 1), Rect2i(1, -1, 1, 1), Rect2i(0, -2, 1, 2), Rect2i(1, -2, 1, 1), Rect2i(2, -2, 1, 1), Rect2i(3, -2, 1, 1), Rect2i(4, -2, 1, 1)])
 
 [node name="UI" type="CanvasLayer" parent="."]
 
