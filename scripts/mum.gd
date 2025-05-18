@@ -167,10 +167,10 @@ func normal_state(delta: float) -> void:
 		state = STATE.CLIMB
 		return
 		
-	# Add the gravity.
-	if get_surface() != SURFACE.FLOOR:
+	# Add the gravity. check if the gravity is pointing upwards, meaning the frog is in water!
+	if get_surface() != SURFACE.FLOOR or sign(get_gravity().y) == -1:
 		velocity += get_gravity() * delta
-	else:
+	else: # otherwise, the frog is on land
 		ledge_catch = 0
 
 	# Handle jump.
@@ -188,10 +188,19 @@ func normal_state(delta: float) -> void:
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	var direction := Input.get_axis("left", "right")
 	if direction:
-		velocity.x = direction * SPEED
+		if get_gravity().x:
+			# check if direction is opposite of gravity
+			if sign(direction) != sign(get_gravity().x):
+				velocity.x = move_toward(velocity.x, direction * SPEED, DEACCEL * 0.1)
+				
+			else: # otherwise add direction to gravity
+				velocity.x = move_toward(velocity.x, (direction * SPEED) + get_gravity().x, DEACCEL * 0.1)
+		else:
+			velocity.x = direction * SPEED
 	else:
 		# if there's gravity in the x direction
 		if (get_gravity().x):
+			# move toward the gravity
 			velocity.x = move_toward(velocity.x, get_gravity().x, DEACCEL * 0.1)
 		else: # otherwise go to 0
 			velocity.x = move_toward(velocity.x, 0, DEACCEL * deaccel_factor)
