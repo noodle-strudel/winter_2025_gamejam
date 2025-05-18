@@ -199,6 +199,7 @@ texture = ExtResource("2_vdr71")
 centered = false
 
 [node name="Mum" parent="." instance=ExtResource("1_gt3vi")]
+z_index = 1
 position = Vector2(215, 206)
 debug = false
 

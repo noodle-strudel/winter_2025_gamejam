@@ -1,6 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://bhx15oamyxwvo"]
+[gd_scene load_steps=6 format=3 uid="uid://b28cgqitfo7r5"]
 
-[ext_resource type="Texture2D" uid="uid://bjwl82qpcvbm1" path="res://sprites/water.png" id="1_bghp0"]
+[ext_resource type="Texture2D" uid="uid://bjwl82qpcvbm1" path="res://sprites/water.png" id="1_5tefn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_q28vv"]
 size = Vector2(64, 64)
@@ -96,10 +96,11 @@ _data = {
 collision_layer = 0
 collision_mask = 3
 gravity_space_override = 3
-gravity_point_center = Vector2(1, -1)
-gravity_direction = Vector2(1, -1)
+gravity_point_center = Vector2(0, -1)
+gravity_direction = Vector2(0, -1)
 linear_damp_space_override = 3
 linear_damp = 100.0
+metadata/_edit_group_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_q28vv")
@@ -111,22 +112,21 @@ polygon = PackedVector2Array(-10, -10, 10, -10, 10, 10, -10, 10)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 modulate = Color(1, 1, 1, 0.25098)
-texture = ExtResource("1_bghp0")
+texture = ExtResource("1_5tefn")
 hframes = 8
 vframes = 2
 
 [node name="TopLayer" type="Node2D" parent="."]
-visible = false
 
 [node name="BGWaves" type="Sprite2D" parent="TopLayer"]
 modulate = Color(1, 1, 1, 0.498039)
-texture = ExtResource("1_bghp0")
+texture = ExtResource("1_5tefn")
 hframes = 8
 vframes = 2
 frame = 8
 
 [node name="MainWaves" type="Sprite2D" parent="TopLayer"]
-texture = ExtResource("1_bghp0")
+texture = ExtResource("1_5tefn")
 hframes = 8
 vframes = 2
 frame = 8
