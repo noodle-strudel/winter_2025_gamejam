@@ -1,5 +1,7 @@
 extends Enemy
 
+class_name FlyEnemy
+
 # think about making flying enemy class
 # do some pathfinding stuff
 # Return to original flying position

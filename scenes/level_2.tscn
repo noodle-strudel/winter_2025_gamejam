@@ -13,6 +13,7 @@ size = Vector2(1359, 754)
 
 [node name="Level2" type="Node2D"]
 process_mode = 3
+position = Vector2(3, 0)
 script = ExtResource("1_ai1dk")
 
 [node name="Mum" parent="." instance=ExtResource("3_y7bcy")]

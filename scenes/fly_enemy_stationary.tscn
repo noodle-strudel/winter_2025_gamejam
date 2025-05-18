@@ -1,0 +1,86 @@
+[gd_scene load_steps=11 format=3 uid="uid://iy4q2u4b663o"]
+
+[ext_resource type="Script" path="res://scripts/fly_enemy.gd" id="1_tmavq"]
+[ext_resource type="Texture2D" uid="uid://srec64xst7ey" path="res://sprites/fly.png" id="2_05grg"]
+[ext_resource type="AudioStream" uid="uid://d2o4nxoiai06k" path="res://sound/monster_attack.mp3" id="3_5gh1s"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_g274v"]
+radius = 24.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_3jerm"]
+radius = 192.167
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_0kwx3"]
+radius = 32.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_aibc0"]
+radius = 32.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4bk35"]
+atlas = ExtResource("2_05grg")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_luyhq"]
+atlas = ExtResource("2_05grg")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_k6puk"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4bk35")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_luyhq")
+}],
+"loop": true,
+"name": &"Fly",
+"speed": 10.0
+}]
+
+[node name="FlyEnemy" type="CharacterBody2D" groups=["enemy"]]
+process_mode = 1
+collision_layer = 2
+collision_mask = 5
+motion_mode = 1
+script = ExtResource("1_tmavq")
+health = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_g274v")
+
+[node name="EntityDetector" type="Area2D" parent="."]
+collision_layer = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EntityDetector"]
+shape = SubResource("CircleShape2D_3jerm")
+debug_color = Color(0.871882, 0.301979, 0.456727, 0.42)
+
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource("CircleShape2D_0kwx3")
+
+[node name="EdibleBox" type="Area2D" parent="."]
+collision_layer = 8
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EdibleBox"]
+shape = SubResource("CircleShape2D_aibc0")
+debug_color = Color(4.81308e-06, 0.62953, 0.481674, 0.42)
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_k6puk")
+animation = &"Fly"
+autoplay = "Fly"
+frame_progress = 0.936718
+
+[node name="DamageSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_5gh1s")
+pitch_scale = 2.33
+
+[connection signal="body_entered" from="EntityDetector" to="." method="_on_entity_detector_body_entered"]
+[connection signal="body_exited" from="EntityDetector" to="." method="_on_entity_detector_body_exited"]
+[connection signal="area_entered" from="Hurtbox" to="." method="_on_hurtbox_area_entered"]
