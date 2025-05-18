@@ -280,9 +280,11 @@ func climb_state(_delta: float) -> void:
 		match surf:
 			SURFACE.LEFT:
 				velocity.x = -JUMP_VELOCITY
+				velocity.y = JUMP_VELOCITY
 				deaccel_factor = 0.1
 			SURFACE.RIGHT:
 				velocity.x = JUMP_VELOCITY
+				velocity.y = JUMP_VELOCITY
 				deaccel_factor = 0.1
 			SURFACE.CEILING:
 				velocity.y = -JUMP_VELOCITY / 2

@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://blmy13xva5nmi"]
+
+[ext_resource type="PackedScene" uid="uid://cw7cwr4lfsvse" path="res://scenes/mum.tscn" id="1_k6jyc"]
+
+[node name="TestRoom" type="Node2D"]
+
+[node name="Mum" parent="." instance=ExtResource("1_k6jyc")]
+position = Vector2(311, 95)
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+position = Vector2(448, 320)
+collision_layer = 4
+collision_mask = 0
