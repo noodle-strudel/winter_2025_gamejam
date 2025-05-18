@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b01cewv7g2g2r"]
+
+[ext_resource type="TileSet" uid="uid://dwbyborlk4a8t" path="res://water_tile_map.tres" id="1_nj7k6"]
+
+[node name="WaterTileMap" type="TileMapLayer"]
+tile_set = ExtResource("1_nj7k6")

@@ -16,7 +16,7 @@ signal player_defeated
 @export var SPEED = 300.0
 @export var CLIMB_SPEED = 100.0
 @export var JUMP_VELOCITY = -600.0
-@export var GRAVITY = 1500
+@export var GRAVITY = get_gravity().y
 @export var KNOCKBACK = -600
 @export var DEACCEL = 300.0
 
@@ -160,7 +160,7 @@ func normal_state(delta: float) -> void:
 		
 	# Add the gravity.
 	if get_surface() != SURFACE.FLOOR:
-		velocity.y += GRAVITY * delta
+		velocity += get_gravity() * delta
 	else:
 		ledge_catch = 0
 
@@ -228,7 +228,7 @@ func attack_state(delta: float) -> void:
 	
 	# Add the gravity.
 	if get_surface() != SURFACE.FLOOR:
-		velocity.y += GRAVITY * delta
+		velocity += get_gravity() * delta
 	
 	# Handle jump.
 	if Input.is_action_just_pressed("jump") and get_surface() == SURFACE.FLOOR:
@@ -390,7 +390,7 @@ func hit_state(delta):
 		
 	# Add the gravity.
 	if not is_on_floor():
-		velocity.y += GRAVITY * delta
+		velocity += get_gravity() * delta
 
 	# Handle jump.
 	if Input.is_action_just_pressed("jump") and is_on_floor():
