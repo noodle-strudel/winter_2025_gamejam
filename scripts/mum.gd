@@ -16,7 +16,7 @@ signal player_defeated
 @export var SPEED = 300.0
 @export var CLIMB_SPEED = 100.0
 @export var JUMP_VELOCITY = -600.0
-@export var GRAVITY = get_gravity().y
+@onready var GRAVITY = get_gravity().y
 @export var KNOCKBACK = -600
 @export var DEACCEL = 300.0
 
@@ -70,6 +70,7 @@ enum SURFACE {
 @export_range(0, 5, 1, "suffix:state") var state = STATE.NORMAL
 
 func _physics_process(delta: float) -> void:
+	GRAVITY = get_gravity().y
 	if debug:
 		if on_wall():
 			$AnimatedSprite2D.modulate = Color.RED 
@@ -102,7 +103,6 @@ func _physics_process(delta: float) -> void:
 	prev_surface = get_surface()
 	for i in get_slide_collision_count():
 		var collision = get_slide_collision(i)
-		print(collision.get_collider())
 
 func get_surface():
 	if is_on_ceiling():
@@ -142,8 +142,11 @@ func normal_state(delta: float) -> void:
 	if deaccel_factor < 1.0:
 		deaccel_factor = min(deaccel_factor + delta, 1.0)
 	
-	position.y -= ledge_catch
-	position.x += ledge_catch
+	if ledge_catch:
+		position.y -= ledge_catch
+		position.x += ledge_catch
+		ledge_catch = 0
+	
 	
 	if Input.is_action_just_pressed("attack"):
 		mum_tongue.monitorable = true
@@ -160,7 +163,7 @@ func normal_state(delta: float) -> void:
 		
 	# Add the gravity.
 	if get_surface() != SURFACE.FLOOR:
-		velocity += get_gravity() * delta
+		velocity.y += GRAVITY * delta
 	else:
 		ledge_catch = 0
 
@@ -228,7 +231,7 @@ func attack_state(delta: float) -> void:
 	
 	# Add the gravity.
 	if get_surface() != SURFACE.FLOOR:
-		velocity += get_gravity() * delta
+		velocity.y += GRAVITY * delta
 	
 	# Handle jump.
 	if Input.is_action_just_pressed("jump") and get_surface() == SURFACE.FLOOR:
@@ -392,7 +395,7 @@ func hit_state(delta):
 		
 	# Add the gravity.
 	if not is_on_floor():
-		velocity += get_gravity() * delta
+		velocity.y += GRAVITY * delta
 
 	# Handle jump.
 	if Input.is_action_just_pressed("jump") and is_on_floor():
