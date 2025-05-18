@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=4 uid="uid://blmy13xva5nmi"]
+[gd_scene load_steps=5 format=4 uid="uid://c81wk2b3b206g"]
 
 [ext_resource type="PackedScene" uid="uid://cm2ivsqmkkqlk" path="res://scenes/beetle_enemy.tscn" id="1_o1ugv"]
 [ext_resource type="PackedScene" uid="uid://cw7cwr4lfsvse" path="res://scenes/mum.tscn" id="2_nm7cy"]
