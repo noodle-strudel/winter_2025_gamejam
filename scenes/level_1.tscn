@@ -121,6 +121,7 @@ process_mode = 3
 script = ExtResource("1_w1mdj")
 
 [node name="BG Map" type="Sprite2D" parent="."]
+visible = false
 scale = Vector2(2, 2)
 texture = ExtResource("2_vdr71")
 centered = false
@@ -265,6 +266,15 @@ script = ExtResource("12_m1qta")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="THE DANGER ZONE OOOH SCARY"]
 position = Vector2(1493.5, 825)
 shape = SubResource("RectangleShape2D_17gig")
+
+[node name="Parallax2D" type="Parallax2D" parent="."]
+repeat_size = Vector2(640, 384)
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax2D"]
+z_index = -1
+scale = Vector2(2, 2)
+texture = ExtResource("2_vdr71")
+centered = false
 
 [connection signal="player_defeated" from="Mum" to="." method="_on_mum_player_defeated"]
 [connection signal="player_take_damage" from="Mum" to="." method="_on_mum_player_take_damage"]
