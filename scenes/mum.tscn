@@ -1,4 +1,4 @@
-[gd_scene load_steps=45 format=3 uid="uid://cw7cwr4lfsvse"]
+[gd_scene load_steps=48 format=3 uid="uid://cw7cwr4lfsvse"]
 
 [ext_resource type="Script" path="res://scripts/mum.gd" id="1_7ljp4"]
 [ext_resource type="Texture2D" uid="uid://ben8hdhrrhc2a" path="res://sprites/frog.png" id="2_m7s8v"]
@@ -88,9 +88,17 @@ region = Rect2(1500, 0, 100, 76)
 atlas = ExtResource("2_m7s8v")
 region = Rect2(0, 152, 100, 76)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_icqu0"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_sok2o"]
 atlas = ExtResource("2_m7s8v")
 region = Rect2(0, 228, 100, 76)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cyhlo"]
+atlas = ExtResource("2_m7s8v")
+region = Rect2(200, 228, 100, 76)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n35i0"]
+atlas = ExtResource("2_m7s8v")
+region = Rect2(100, 228, 100, 76)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_n7m0c"]
 atlas = ExtResource("2_m7s8v")
@@ -107,6 +115,10 @@ region = Rect2(200, 76, 100, 76)
 [sub_resource type="AtlasTexture" id="AtlasTexture_bwhuv"]
 atlas = ExtResource("2_m7s8v")
 region = Rect2(0, 380, 100, 76)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tfl54"]
+atlas = ExtResource("2_m7s8v")
+region = Rect2(100, 380, 100, 76)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_sjxfk"]
 atlas = ExtResource("2_m7s8v")
@@ -209,10 +221,26 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_icqu0")
+"texture": SubResource("AtlasTexture_sok2o")
+}],
+"loop": true,
+"name": &"look_up",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cyhlo")
 }],
 "loop": true,
 "name": &"tongue",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_n35i0")
+}],
+"loop": true,
+"name": &"tongue_up",
 "speed": 5.0
 }, {
 "frames": [{
@@ -235,6 +263,14 @@ animations = [{
 }],
 "loop": true,
 "name": &"wall_idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tfl54")
+}],
+"loop": true,
+"name": &"wall_look_up",
 "speed": 5.0
 }, {
 "frames": [{
@@ -318,7 +354,7 @@ shape = SubResource("RectangleShape2D_0v8ah")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_ruqhk")
-animation = &"wall_idle"
+animation = &"tongue"
 autoplay = "idle"
 
 [node name="UI" type="Control" parent="."]
@@ -370,7 +406,7 @@ one_shot = true
 editor_description = "This one is at the origin of the character so it flips properly"
 
 [node name="Line2D" type="Line2D" parent="TonguePath"]
-points = PackedVector2Array(144, -22, 12, 0)
+points = PackedVector2Array(144, -22, 12, -4)
 width = 8.0
 default_color = Color(1, 0.262745, 1, 1)
 texture = ExtResource("5_256v8")
@@ -380,7 +416,7 @@ texture_mode = 2
 position = Vector2(16, -4)
 
 [node name="TonguePath" type="Path2D" parent="TonguePath/TonguePathOrigin"]
-position = Vector2(-16, 32)
+position = Vector2(-16, 24)
 curve = SubResource("Curve2D_gbwyh")
 
 [node name="TonguePathFollower" type="PathFollow2D" parent="TonguePath/TonguePathOrigin/TonguePath"]
@@ -396,8 +432,7 @@ monitorable = false
 shape = SubResource("CircleShape2D_8oy6e")
 
 [node name="Polygon2D" type="Sprite2D" parent="TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower/MumTongue"]
-position = Vector2(0, -1.90735e-06)
-scale = Vector2(0.884615, 0.913043)
+scale = Vector2(0.9, 0.9)
 texture = SubResource("GradientTexture2D_k4xck")
 
 [node name="RemoteTransform2D" type="RemoteTransform2D" parent="TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower"]
