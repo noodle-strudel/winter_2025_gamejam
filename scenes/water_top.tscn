@@ -1,48 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://bhx15oamyxwvo"]
+[gd_scene load_steps=6 format=3 uid="uid://b28cgqitfo7r5"]
 
-[ext_resource type="Texture2D" uid="uid://bjwl82qpcvbm1" path="res://sprites/water.png" id="1_bghp0"]
+[ext_resource type="Texture2D" uid="uid://bjwl82qpcvbm1" path="res://sprites/water.png" id="1_5tefn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_q28vv"]
 size = Vector2(64, 64)
-
-[sub_resource type="Animation" id="Animation_xod6w"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [0]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("TopLayer/BGWaves:frame")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [8]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("TopLayer/MainWaves:frame")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [8]
-}
 
 [sub_resource type="Animation" id="Animation_o7uoq"]
 resource_name = "flow"
@@ -86,6 +47,45 @@ tracks/2/keys = {
 "values": [8, 9, 10, 11, 12, 13, 14, 15, 8, 9, 10, 11, 12, 13, 14, 15, 15]
 }
 
+[sub_resource type="Animation" id="Animation_xod6w"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("TopLayer/BGWaves:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [8]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("TopLayer/MainWaves:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [8]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_o5ayg"]
 _data = {
 "RESET": SubResource("Animation_xod6w"),
@@ -96,10 +96,11 @@ _data = {
 collision_layer = 0
 collision_mask = 3
 gravity_space_override = 3
-gravity_point_center = Vector2(0.5, -1)
-gravity_direction = Vector2(0.5, -1)
+gravity_point_center = Vector2(0, -1)
+gravity_direction = Vector2(0, -1)
 linear_damp_space_override = 3
 linear_damp = 100.0
+metadata/_edit_group_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_q28vv")
@@ -111,22 +112,21 @@ polygon = PackedVector2Array(-10, -10, 10, -10, 10, 10, -10, 10)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 modulate = Color(1, 1, 1, 0.25098)
-texture = ExtResource("1_bghp0")
+texture = ExtResource("1_5tefn")
 hframes = 8
 vframes = 2
 
 [node name="TopLayer" type="Node2D" parent="."]
-visible = false
 
 [node name="BGWaves" type="Sprite2D" parent="TopLayer"]
 modulate = Color(1, 1, 1, 0.498039)
-texture = ExtResource("1_bghp0")
+texture = ExtResource("1_5tefn")
 hframes = 8
 vframes = 2
 frame = 8
 
 [node name="MainWaves" type="Sprite2D" parent="TopLayer"]
-texture = ExtResource("1_bghp0")
+texture = ExtResource("1_5tefn")
 hframes = 8
 vframes = 2
 frame = 8

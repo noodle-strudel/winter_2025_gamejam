@@ -1,10 +1,16 @@
-[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://dwbyborlk4a8t"]
+[gd_resource type="TileSet" load_steps=4 format=3 uid="uid://dwbyborlk4a8t"]
 
 [ext_resource type="PackedScene" uid="uid://bhx15oamyxwvo" path="res://scenes/water.tscn" id="1_3ovor"]
+[ext_resource type="PackedScene" uid="uid://b28cgqitfo7r5" path="res://scenes/water_top.tscn" id="2_oxsqv"]
 
 [sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_08dxh"]
+resource_name = "water"
 scenes/1/scene = ExtResource("1_3ovor")
+scenes/2/scene = ExtResource("2_oxsqv")
 
 [resource]
 tile_size = Vector2i(64, 64)
+terrain_set_0/mode = 2
+terrain_set_0/terrain_0/name = "Terrain 0"
+terrain_set_0/terrain_0/color = Color(0.5, 0.34375, 0.25, 1)
 sources/0 = SubResource("TileSetScenesCollectionSource_08dxh")
