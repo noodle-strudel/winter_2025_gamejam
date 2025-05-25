@@ -459,14 +459,24 @@ func animate() -> void:
 	
 	### Play the animations
 	if state in [STATE.GRAPPLE, STATE.ATTACK]:
-		anim.play("tongue")
+		if is_climbing():
+			anim.play("wall_tongue")
+		else:
+			anim.play("tongue")
 		return
 	var vertical_threshold = 50
+	# INTRODUCING: Hellscape of nested if statements
 	if surf != SURFACE.AIR:
 		if relevant_vel == 0:
-			anim.play("idle")
+			if is_climbing():
+				anim.play("wall_idle")
+			else:
+				anim.play("idle")
 		else:
-			anim.play("walk")
+			if is_climbing():
+				anim.play("wall_walk")
+			else:
+				anim.play("walk")
 	else:
 		# In the air
 		if velocity.y > vertical_threshold:
@@ -480,7 +490,7 @@ func flip(vel):
 	if vel == 0:
 		return
 	# Gives 1 or 0
-	var s = vel / abs(vel)
+	var s = sign(vel)
 	
 	for child in get_children():
 		if child is Node2D and not child.is_in_group("noflip"):

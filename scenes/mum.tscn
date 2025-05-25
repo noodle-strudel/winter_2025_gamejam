@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3 uid="uid://cw7cwr4lfsvse"]
+[gd_scene load_steps=45 format=3 uid="uid://cw7cwr4lfsvse"]
 
 [ext_resource type="Script" path="res://scripts/mum.gd" id="1_7ljp4"]
 [ext_resource type="Texture2D" uid="uid://ben8hdhrrhc2a" path="res://sprites/frog.png" id="2_m7s8v"]
@@ -104,6 +104,30 @@ region = Rect2(100, 76, 100, 76)
 atlas = ExtResource("2_m7s8v")
 region = Rect2(200, 76, 100, 76)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_bwhuv"]
+atlas = ExtResource("2_m7s8v")
+region = Rect2(0, 380, 100, 76)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sjxfk"]
+atlas = ExtResource("2_m7s8v")
+region = Rect2(200, 380, 100, 76)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mv6hf"]
+atlas = ExtResource("2_m7s8v")
+region = Rect2(0, 304, 100, 76)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nxx2i"]
+atlas = ExtResource("2_m7s8v")
+region = Rect2(100, 304, 100, 76)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oqgla"]
+atlas = ExtResource("2_m7s8v")
+region = Rect2(200, 304, 100, 76)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xrs18"]
+atlas = ExtResource("2_m7s8v")
+region = Rect2(300, 304, 100, 76)
+
 [sub_resource type="SpriteFrames" id="SpriteFrames_ruqhk"]
 animations = [{
 "frames": [{
@@ -204,6 +228,39 @@ animations = [{
 "loop": true,
 "name": &"walk",
 "speed": 7.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bwhuv")
+}],
+"loop": true,
+"name": &"wall_idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sjxfk")
+}],
+"loop": true,
+"name": &"wall_tongue",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mv6hf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nxx2i")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oqgla")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xrs18")
+}],
+"loop": true,
+"name": &"wall_walk",
+"speed": 5.0
 }]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dsei6"]
@@ -261,7 +318,7 @@ shape = SubResource("RectangleShape2D_0v8ah")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_ruqhk")
-animation = &"tongue"
+animation = &"wall_idle"
 autoplay = "idle"
 
 [node name="UI" type="Control" parent="."]
