@@ -285,12 +285,12 @@ func climb_state(_delta: float) -> void:
 		$JumpAudio.play()
 	# Handle jump
 	var jump = Input.is_action_just_pressed("jump")
-	if Input.is_action_just_pressed("right") and surf == SURFACE.LEFT:
-		jump = true
-	if Input.is_action_just_pressed("left") and surf == SURFACE.RIGHT:
-		jump = true
-	if Input.is_action_just_pressed("down") and surf == SURFACE.CEILING:
-		jump = true
+	#if Input.is_action_just_pressed("right") and surf == SURFACE.LEFT:
+		#jump = true
+	#if Input.is_action_just_pressed("left") and surf == SURFACE.RIGHT:
+		#jump = true
+	#if Input.is_action_just_pressed("down") and surf == SURFACE.CEILING:
+		#jump = true
 	
 	if jump:
 		prev_state = state
