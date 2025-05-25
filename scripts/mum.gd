@@ -5,6 +5,7 @@ signal player_take_damage(int)
 signal player_defeated
 
 @onready var tongue_attack_origin = $TonguePath/TonguePathOrigin
+@onready var tongue_line = $TonguePath/Line2D
 @onready var tongue_path = $TonguePath/TonguePathOrigin/TonguePath
 @onready var tongue_attack = $TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower
 @onready var tongue_remote_transform = $TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower/RemoteTransform2D
@@ -44,6 +45,9 @@ var retracting: bool = false
 # keeps track of what state the player was in last
 var prev_state := 0
 var prev_surface := 0
+
+# Locks the animation while attacking, to avoid weirdness
+var anim_lock = ""
 
 # So the player can climb up onto the ground from the wall, without having a seziure
 var ledge_catch = 0
@@ -136,10 +140,10 @@ func get_surface():
 
 # Not to be confused with is_on_wall(). They're a little different, and I hope this one works better.
 func on_wall():
-	return get_surface() in [SURFACE.RIGHT, SURFACE.LEFT]
+	return get_surface() in [SURFACE.RIGHT, SURFACE.LEFT] && stamina > 0
 
 func is_climbing():
-	return get_surface() in [SURFACE.RIGHT, SURFACE.LEFT, SURFACE.CEILING]
+	return get_surface() in [SURFACE.RIGHT, SURFACE.LEFT, SURFACE.CEILING] && stamina > 0
 	
 func is_ceiling_climbing():
 	return state == STATE.CLIMB and get_surface() == SURFACE.CEILING
@@ -233,7 +237,7 @@ func extend_tongue() -> void:
 		mum_tongue.monitorable = false
 		mum_tongue.monitoring = false
 		tongue_attack.visible = false
-			
+		
 		state = STATE.NORMAL
 		
 	
@@ -285,12 +289,14 @@ func climb_state(_delta: float) -> void:
 		$JumpAudio.play()
 	# Handle jump
 	var jump = Input.is_action_just_pressed("jump")
-	if Input.is_action_just_pressed("right") and surf == SURFACE.LEFT:
-		jump = true
-	if Input.is_action_just_pressed("left") and surf == SURFACE.RIGHT:
-		jump = true
-	if Input.is_action_just_pressed("down") and surf == SURFACE.CEILING:
-		jump = true
+	
+	# Y'know what, only jump if the player actually presses the button
+	#if Input.is_action_just_pressed("right") and surf == SURFACE.LEFT:
+		#jump = true
+	#if Input.is_action_just_pressed("left") and surf == SURFACE.RIGHT:
+		#jump = true
+	#if Input.is_action_just_pressed("down") and surf == SURFACE.CEILING:
+		#jump = true
 	
 	if jump:
 		prev_state = state
@@ -313,8 +319,13 @@ func climb_state(_delta: float) -> void:
 		flip_vert(1)
 		move_and_slide()
 		return
-
-	var direction := Vector2(int(Input.get_axis("left", "right")), int(Input.get_axis("up", "down")))
+	
+	var direction := Vector2()
+	if not on_wall():
+		direction.x = int(Input.get_axis("left", "right"))
+	if not is_on_ceiling():
+		direction.y = int(Input.get_axis("up", "down"))
+	#var direction := Vector2(int(Input.get_axis("left", "right")), int(Input.get_axis("up", "down")))
 	if direction:
 		velocity = direction * CLIMB_SPEED
 		if surf == SURFACE.RIGHT and not direction.x < 0:
@@ -422,7 +433,7 @@ func hit_state(delta):
 		
 	# moves the tongue 45 degrees up
 	if Input.is_action_pressed("up"):
-		tongue_attack_origin.rotation_degrees = -45 
+		tongue_attack_origin.rotation_degrees = -45
 	else:
 		tongue_attack_origin.rotation_degrees = 0
 	
@@ -476,16 +487,51 @@ func animate() -> void:
 	
 	var relevant_vel = vel.y if on_wall() else vel.x
 	
+	# Are we looking "up" ?
+	var looking_up = false
+	if surf == SURFACE.FLOOR && Input.is_action_pressed("up"):
+		looking_up = true
+	elif surf == SURFACE.LEFT && Input.is_action_pressed("right"):
+		looking_up = true
+	elif surf == SURFACE.RIGHT && Input.is_action_pressed("left"):
+		looking_up = true
+	elif is_ceiling_climbing() && Input.is_action_pressed("down"):
+		looking_up = true
+	
 	### Play the animations
 	if state in [STATE.GRAPPLE, STATE.ATTACK]:
-		anim.play("tongue")
+		if anim_lock != "":
+			anim.play(anim_lock)
+			return
+		if is_climbing():
+			anim.play("wall_tongue")
+		else:
+			if looking_up:
+				anim.play("tongue_up")
+			else:
+				anim.play("tongue")
+		anim_lock = anim.animation
 		return
+	anim_lock = ""
 	var vertical_threshold = 50
+	# INTRODUCING: Nightmare hellscape of nested if statements
 	if surf != SURFACE.AIR:
 		if relevant_vel == 0:
-			anim.play("idle")
+			if looking_up:
+				if is_climbing():
+					anim.play("wall_look_up")
+				else:
+					anim.play("look_up")
+			else:
+				if is_climbing():
+					anim.play("wall_idle")
+				else:
+					anim.play("idle")
 		else:
-			anim.play("walk")
+			if is_climbing():
+				anim.play("wall_walk")
+			else:
+				anim.play("walk")
 	else:
 		# In the air
 		if velocity.y > vertical_threshold:
@@ -499,7 +545,7 @@ func flip(vel):
 	if vel == 0:
 		return
 	# Gives 1 or 0
-	var s = vel / abs(vel)
+	var s = sign(vel)
 	
 	for child in get_children():
 		if child is Node2D and not child.is_in_group("noflip"):
