@@ -403,40 +403,40 @@ shape = SubResource("RectangleShape2D_ishdc")
 [node name="HurtCooldown" type="Timer" parent="."]
 one_shot = true
 
-[node name="TonguePath" type="Node2D" parent="."]
+[node name="TonguePathRoot" type="Node2D" parent="."]
 editor_description = "This one is at the origin of the character so it flips properly"
 
-[node name="Line2D" type="Line2D" parent="TonguePath"]
+[node name="Line2D" type="Line2D" parent="TonguePathRoot"]
 points = PackedVector2Array(144, -22, 12, -4)
 width = 8.0
 default_color = Color(1, 0.262745, 1, 1)
 texture = ExtResource("5_256v8")
 texture_mode = 2
 
-[node name="TonguePathOrigin" type="Node2D" parent="TonguePath"]
+[node name="TonguePathOrigin" type="Node2D" parent="TonguePathRoot"]
 position = Vector2(16, -4)
 
-[node name="TonguePath" type="Path2D" parent="TonguePath/TonguePathOrigin"]
-position = Vector2(-16, 24)
+[node name="TonguePath" type="Path2D" parent="TonguePathRoot/TonguePathOrigin"]
+position = Vector2(-16, 32)
 curve = SubResource("Curve2D_gbwyh")
 
-[node name="TonguePathFollower" type="PathFollow2D" parent="TonguePath/TonguePathOrigin/TonguePath"]
+[node name="TonguePathFollower" type="PathFollow2D" parent="TonguePathRoot/TonguePathOrigin/TonguePath"]
 position = Vector2(16, -32)
 
-[node name="MumTongue" type="Area2D" parent="TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower"]
+[node name="MumTongue" type="Area2D" parent="TonguePathRoot/TonguePathOrigin/TonguePath/TonguePathFollower"]
 collision_layer = 16
 collision_mask = 110
 monitoring = false
 monitorable = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower/MumTongue"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TonguePathRoot/TonguePathOrigin/TonguePath/TonguePathFollower/MumTongue"]
 shape = SubResource("CircleShape2D_8oy6e")
 
-[node name="Polygon2D" type="Sprite2D" parent="TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower/MumTongue"]
+[node name="Polygon2D" type="Sprite2D" parent="TonguePathRoot/TonguePathOrigin/TonguePath/TonguePathFollower/MumTongue"]
 scale = Vector2(0.9, 0.9)
 texture = SubResource("GradientTexture2D_k4xck")
 
-[node name="RemoteTransform2D" type="RemoteTransform2D" parent="TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower"]
+[node name="RemoteTransform2D" type="RemoteTransform2D" parent="TonguePathRoot/TonguePathOrigin/TonguePath/TonguePathFollower"]
 remote_path = NodePath("../MumTongue/CollisionShape2D")
 
 [node name="JumpAudio" type="AudioStreamPlayer2D" parent="."]
@@ -445,5 +445,5 @@ stream = ExtResource("5_d3dy1")
 [connection signal="timeout" from="StaminaCooldown" to="." method="_on_stamina_cooldown_timeout"]
 [connection signal="body_entered" from="HurtBox" to="." method="_on_hurt_box_body_entered"]
 [connection signal="timeout" from="HurtCooldown" to="." method="_on_hurt_cooldown_timeout"]
-[connection signal="area_entered" from="TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower/MumTongue" to="." method="_on_mum_tongue_area_entered"]
-[connection signal="body_entered" from="TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower/MumTongue" to="." method="_on_mum_tongue_body_entered"]
+[connection signal="area_entered" from="TonguePathRoot/TonguePathOrigin/TonguePath/TonguePathFollower/MumTongue" to="." method="_on_mum_tongue_area_entered"]
+[connection signal="body_entered" from="TonguePathRoot/TonguePathOrigin/TonguePath/TonguePathFollower/MumTongue" to="." method="_on_mum_tongue_body_entered"]
