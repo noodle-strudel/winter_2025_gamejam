@@ -4,15 +4,17 @@ signal create_grapple
 signal player_take_damage(int)
 signal player_defeated
 
-@onready var tongue_attack_origin = $TonguePath/TonguePathOrigin
-@onready var tongue_line = $TonguePath/Line2D
-@onready var tongue_path = $TonguePath/TonguePathOrigin/TonguePath
-@onready var tongue_attack = $TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower
-@onready var tongue_remote_transform = $TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower/RemoteTransform2D
-@onready var mum_tongue = $TonguePath/TonguePathOrigin/TonguePath/TonguePathFollower/MumTongue
+@onready var tongue_attack_origin = $TonguePathRoot/TonguePathOrigin
+@onready var tongue_root = $TonguePathRoot
+@onready var tongue_line = $TonguePathRoot/Line2D
+@onready var tongue_path = $TonguePathRoot/TonguePathOrigin/TonguePath
+@onready var tongue_attack = $TonguePathRoot/TonguePathOrigin/TonguePath/TonguePathFollower
+@onready var tongue_remote_transform = $TonguePathRoot/TonguePathOrigin/TonguePath/TonguePathFollower/RemoteTransform2D
+@onready var mum_tongue = $TonguePathRoot/TonguePathOrigin/TonguePath/TonguePathFollower/MumTongue
 @onready var anim = $AnimatedSprite2D
 @onready var stamina_bar = $UI/StaminaBar
 
+@export var debug_stamina = false
 
 @export var SPEED = 300.0
 @export var CLIMB_SPEED = 100.0
@@ -105,14 +107,20 @@ func _physics_process(delta: float) -> void:
 	animate()
 	
 	# Better ways to do this; I'm too tired to care
-	$TonguePath.visible = state in [STATE.ATTACK, STATE.GRAPPLE]
-	$TonguePath/Line2D.set_point_position(0, (mum_tongue.global_position - global_position) * $AnimatedSprite2D.scale)
+	#$TonguePath.visible = state in [STATE.ATTACK, STATE.GRAPPLE]
+	var rotation = -tongue_root.global_rotation
+	if not on_wall():
+		rotation = 0
+	tongue_line.set_point_position(0, ((mum_tongue.global_position - global_position) * anim.scale).rotated(rotation))
+	print(tongue_root.global_rotation_degrees)
+	#tongue_line.set_point_position(1, (tongue_attack_origin.global_position - global_position) * anim.scale)
 	
 	# Last
 	prev_vel = velocity
 	prev_surface = get_surface()
 	for i in get_slide_collision_count():
 		var collision = get_slide_collision(i)
+	
 
 func get_surface():
 	if is_on_ceiling():
@@ -147,6 +155,20 @@ func is_climbing():
 	
 func is_ceiling_climbing():
 	return state == STATE.CLIMB and get_surface() == SURFACE.CEILING
+
+# Returns whether the player is looking away from their surface
+func looking_up():
+	var looking_up = false
+	var surf = get_surface()
+	if surf == SURFACE.FLOOR && Input.is_action_pressed("up"):
+		looking_up = true
+	elif surf == SURFACE.LEFT && Input.is_action_pressed("right"):
+		looking_up = true
+	elif surf == SURFACE.RIGHT && Input.is_action_pressed("left"):
+		looking_up = true
+	elif surf == SURFACE.CEILING && Input.is_action_pressed("down"):
+		looking_up = true
+	return looking_up
 
 func normal_state(delta: float) -> void:
 	if deaccel_factor < 1.0:
@@ -183,7 +205,7 @@ func normal_state(delta: float) -> void:
 		$JumpAudio.play()
 		
 	# moves the tongue 45 degrees up
-	if Input.is_action_pressed("up"):
+	if looking_up():
 		tongue_attack_origin.rotation_degrees = -45 
 	else:
 		tongue_attack_origin.rotation_degrees = 0
@@ -238,42 +260,64 @@ func extend_tongue() -> void:
 		mum_tongue.monitoring = false
 		tongue_attack.visible = false
 		
-		state = STATE.NORMAL
+		state = prev_state
 		
 	
 func attack_state(delta: float) -> void:
-	if on_wall() and not empty_stamina:
-		tongue_attack.progress_ratio = 0
-		tongue_attack.visible = false
-		eat_food()
-		prev_state = state
-		state = STATE.CLIMB
-		return
+	#if on_wall() and not empty_stamina:
+		#tongue_attack.progress_ratio = 0
+		#tongue_attack.visible = false
+		#eat_food()
+		#prev_state = state
+		#state = STATE.CLIMB
+		#return
 		
 	tongue_attack.visible = true
 	
 	# Add the gravity.
-	if get_surface() != SURFACE.FLOOR:
-		velocity += get_gravity() * delta
+	#if get_surface() != SURFACE.FLOOR:
+	#	velocity.y += GRAVITY * delta
 	
 	# Handle jump.
-	if Input.is_action_just_pressed("jump") and get_surface() == SURFACE.FLOOR:
-		velocity.y = JUMP_VELOCITY
+	# No need to jump while attacking, I figure?
+	#if Input.is_action_just_pressed("jump") and get_surface() == SURFACE.FLOOR:
+	#	velocity.y = JUMP_VELOCITY
 	
 	extend_tongue()
 	
-	var direction := Input.get_axis("left", "right")
-	if direction:
-		velocity.x = direction * SPEED
-	else:
-		velocity.x = move_toward(velocity.x, 0, DEACCEL)
+	
+	#var direction := Input.get_axis("left", "right")
+	#if direction:
+		#velocity.x = direction * SPEED
+	#else:
+		#velocity.x = move_toward(velocity.x, 0, DEACCEL)
+	velocity.x = move_toward(velocity.x, 0, DEACCEL)
 		
-	flip(velocity.x)
+	#flip(velocity.x)
 	move_and_slide()
 
 func climb_state(_delta: float) -> void:
 	var surf = get_surface()
-	anim.rotation_degrees = 0
+	
+	
+	# moves the tongue 45 degrees up
+	if looking_up():
+		if surf == SURFACE.RIGHT:
+			tongue_attack_origin.global_rotation_degrees = 180
+		elif surf == SURFACE.LEFT:
+			tongue_attack_origin.global_rotation_degrees = 0
+	else:
+		tongue_attack_origin.global_rotation_degrees = anim.global_rotation_degrees
+	
+	if Input.is_action_just_pressed("attack"):
+		mum_tongue.monitorable = true
+		mum_tongue.monitoring = true
+		$TongueSound.play()
+		prev_state = state
+		state = STATE.ATTACK
+		return
+	
+	
 	if (not is_climbing()) or empty_stamina:
 		if prev_state == STATE.HIT:
 			prev_state = STATE.CLIMB
@@ -300,6 +344,8 @@ func climb_state(_delta: float) -> void:
 	
 	if jump:
 		prev_state = state
+		anim.global_rotation_degrees = 0
+		tongue_root.rotation_degrees = 0
 		if prev_state == STATE.HIT:
 			state = STATE.HIT
 		else:
@@ -341,14 +387,23 @@ func climb_state(_delta: float) -> void:
 	
 	match surf:
 		SURFACE.CEILING:
+			anim.global_rotation_degrees = 0
+			tongue_root.rotation_degrees = 0
 			flip(velocity.x)
 			flip_vert(-1)
 		SURFACE.RIGHT:
-			anim.rotation_degrees = -90
+			#anim.rotation_degrees = -90
+			anim.global_rotation_degrees = -90
+			tongue_root.rotation_degrees = -90
 			flip(-velocity.y)
 		SURFACE.LEFT:
-			anim.rotation_degrees = 90
+			#anim.rotation_degrees = 90
+			anim.global_rotation_degrees = 90
+			tongue_root.rotation_degrees = 90
 			flip(velocity.y)
+		_:
+			anim.global_rotation_degrees = 0
+			tongue_root.rotation_degrees = 0
 	
 	
 	move_and_slide()
@@ -357,7 +412,8 @@ func climb_state(_delta: float) -> void:
 # Manages stamina and stanima bar
 func manage_stamina():
 	if state == STATE.CLIMB:
-		stamina -= 0.3
+		if not debug_stamina:
+			stamina -= 0.3
 		full_stamina = false
 		if stamina <= 0:
 			empty_stamina = true
@@ -397,7 +453,7 @@ func grapple_state(delta: float) -> void:
 	
 	grapple_path_follower.progress += 7
 	
-	if is_on_wall() or is_on_ceiling():
+	if on_wall() or get_surface() == SURFACE.CEILING:
 		grapple_path.call_deferred("queue_free")
 		tongue_attack.progress_ratio = 0
 		prev_state = state
@@ -432,7 +488,7 @@ func hit_state(delta):
 		velocity.y = JUMP_VELOCITY
 		
 	# moves the tongue 45 degrees up
-	if Input.is_action_pressed("up"):
+	if looking_up():
 		tongue_attack_origin.rotation_degrees = -45
 	else:
 		tongue_attack_origin.rotation_degrees = 0
@@ -488,15 +544,7 @@ func animate() -> void:
 	var relevant_vel = vel.y if on_wall() else vel.x
 	
 	# Are we looking "up" ?
-	var looking_up = false
-	if surf == SURFACE.FLOOR && Input.is_action_pressed("up"):
-		looking_up = true
-	elif surf == SURFACE.LEFT && Input.is_action_pressed("right"):
-		looking_up = true
-	elif surf == SURFACE.RIGHT && Input.is_action_pressed("left"):
-		looking_up = true
-	elif is_ceiling_climbing() && Input.is_action_pressed("down"):
-		looking_up = true
+	var looking_up = looking_up()
 	
 	### Play the animations
 	if state in [STATE.GRAPPLE, STATE.ATTACK]:
@@ -555,6 +603,7 @@ func flip_vert(factor):
 	for child in get_children():
 		if child is Node2D and child.name != "TonguePath" and not child.is_in_group("noflip"):
 			child.scale.y = abs(child.scale.y) * factor
+
 
 func take_damage(dmg):
 	health -= dmg
