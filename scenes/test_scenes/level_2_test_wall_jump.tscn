@@ -4,11 +4,11 @@
 [ext_resource type="PackedScene" uid="uid://cw7cwr4lfsvse" path="res://scenes/mum.tscn" id="2_2awue"]
 [ext_resource type="TileSet" uid="uid://coh6k1wo8sh15" path="res://stone_brick_tiles.tres" id="3_nafjf"]
 [ext_resource type="Script" path="res://scripts/cam_zone_manager.gd" id="4_cpq5r"]
-[ext_resource type="PackedScene" uid="uid://bbfixdd0dm6cd" path="res://scenes/fly_enemy.tscn" id="5_7qgp6"]
 [ext_resource type="AudioStream" uid="uid://ckhkbjri60iki" path="res://sound/music.wav" id="5_gjpr5"]
-[ext_resource type="Script" path="res://scripts/fly_enemy_stationary.gd" id="6_okaen"]
 [ext_resource type="Script" path="res://scripts/death_zone.gd" id="6_v8slv"]
 [ext_resource type="Texture2D" uid="uid://mf0dvw4owtkm" path="res://sprites/bg_extended.png" id="7_36l8e"]
+[ext_resource type="PackedScene" uid="uid://b01cewv7g2g2r" path="res://scenes/water_tile_map.tscn" id="8_xmdn6"]
+[ext_resource type="PackedScene" uid="uid://iy4q2u4b663o" path="res://scenes/fly_enemy_stationary.tscn" id="9_14qyn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_17gig"]
 size = Vector2(1359, 754)
@@ -28,11 +28,6 @@ tile_set = ExtResource("3_nafjf")
 [node name="CamZoneManager" type="Node2D" parent="."]
 script = ExtResource("4_cpq5r")
 zones = Array[Rect2i]([Rect2i(0, 0, 3, 3)])
-
-[node name="FlyEnemyStationary" parent="." instance=ExtResource("5_7qgp6")]
-position = Vector2(576, 640)
-script = ExtResource("6_okaen")
-health = 10
 
 [node name="UI" type="CanvasLayer" parent="."]
 
@@ -64,6 +59,13 @@ z_index = -1
 scale = Vector2(2, 2)
 texture = ExtResource("7_36l8e")
 centered = false
+
+[node name="WaterTileMap" parent="." instance=ExtResource("8_xmdn6")]
+position = Vector2(1248, -216)
+tile_map_data = PackedByteArray("AAAAAAEAAAAAAAAAAQAAAAAAAAAAAAAAAQABAAAAAAAAAAAAAQACAAAAAAAAAAAAAQAFAAEAAAAAAAAAAQAGAAEAAAAAAAAAAQAHAAEAAAAAAAAAAQAIAAEAAAAAAAAAAQAAAAIAAAAAAAAAAQABAAIAAAAAAAAAAQABAAEAAAAAAAAAAQACAAEAAAAAAAAAAQACAAIAAAAAAAAAAQAFAAIAAAAAAAAAAQAGAAIAAAAAAAAAAQAHAAIAAAAAAAAAAQAIAAIAAAAAAAAAAQAJAAIAAAAAAAAAAQAJAAMAAAAAAAAAAQAIAAMAAAAAAAAAAQAHAAMAAAAAAAAAAQAGAAMAAAAAAAAAAQAFAAMAAAAAAAAAAQAAAAQAAAAAAAAAAQABAAQAAAAAAAAAAQACAAQAAAAAAAAAAQADAAQAAAAAAAAAAQAEAAQAAAAAAAAAAQAFAAQAAAAAAAAAAQAEAAMAAAAAAAAAAQADAAMAAAAAAAAAAQACAAMAAAAAAAAAAQABAAMAAAAAAAAAAQAAAAMAAAAAAAAAAQADAAAAAAAAAAAAAQAEAAAAAAAAAAAAAQAFAAAAAAAAAAAAAQAGAAAAAAAAAAAAAQAHAAAAAAAAAAAAAQAIAAAAAAAAAAAAAQAJAAAAAAAAAAAAAQADAAIAAAAAAAAAAQAEAAIAAAAAAAAAAQAGAAQAAAAAAAAAAQAHAAQAAAAAAAAAAQAIAAQAAAAAAAAAAQAJAAQAAAAAAAAAAQAAAP//AAAAAAAAAgABAP//AAAAAAAAAgACAP//AAAAAAAAAgADAP//AAAAAAAAAgAEAP//AAAAAAAAAgAFAP//AAAAAAAAAgAGAP//AAAAAAAAAgAHAP//AAAAAAAAAgAIAP//AAAAAAAAAgAJAP//AAAAAAAAAgADAAEAAAAAAAAAAQAEAAEAAAAAAAAAAQAJAAEAAAAAAAAAAQA=")
+
+[node name="FlyEnemy" parent="." instance=ExtResource("9_14qyn")]
+position = Vector2(576, 632)
 
 [connection signal="player_defeated" from="Mum" to="." method="_on_mum_player_defeated"]
 [connection signal="player_take_damage" from="Mum" to="." method="_on_mum_player_take_damage"]

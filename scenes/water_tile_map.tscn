@@ -1,22 +1,7 @@
-[gd_scene load_steps=4 format=4 uid="uid://b01cewv7g2g2r"]
+[gd_scene load_steps=2 format=3 uid="uid://b01cewv7g2g2r"]
 
 [ext_resource type="TileSet" uid="uid://dwbyborlk4a8t" path="res://water_tile_map.tres" id="1_nj7k6"]
-[ext_resource type="Texture2D" uid="uid://ben8hdhrrhc2a" path="res://sprites/frog.png" id="2_tatpp"]
-[ext_resource type="Texture2D" uid="uid://mf0dvw4owtkm" path="res://sprites/bg_extended.png" id="3_3cgj4"]
 
 [node name="WaterTileMap" type="TileMapLayer"]
-tile_map_data = PackedByteArray("AAAAAAAAAAAAAAAAAgABAAAAAAAAAAAAAgACAAAAAAAAAAAAAgAFAAEAAAAAAAAAAgAGAAEAAAAAAAAAAgAHAAEAAAAAAAAAAgAIAAEAAAAAAAAAAgAAAAEAAAAAAAAAAQAAAAIAAAAAAAAAAQABAAIAAAAAAAAAAQABAAEAAAAAAAAAAQACAAEAAAAAAAAAAQACAAIAAAAAAAAAAQAFAAIAAAAAAAAAAQAGAAIAAAAAAAAAAQAHAAIAAAAAAAAAAQAIAAIAAAAAAAAAAQAJAAIAAAAAAAAAAQAJAAMAAAAAAAAAAQAIAAMAAAAAAAAAAQAHAAMAAAAAAAAAAQAGAAMAAAAAAAAAAQAFAAMAAAAAAAAAAQAAAAQAAAAAAAAAAQABAAQAAAAAAAAAAQACAAQAAAAAAAAAAQADAAQAAAAAAAAAAQAEAAQAAAAAAAAAAQAFAAQAAAAAAAAAAQAEAAMAAAAAAAAAAQADAAMAAAAAAAAAAQACAAMAAAAAAAAAAQABAAMAAAAAAAAAAQAAAAMAAAAAAAAAAQA=")
+tile_map_data = PackedByteArray(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0)
 tile_set = ExtResource("1_nj7k6")
-
-[node name="Sprite2D" type="Sprite2D" parent="."]
-z_index = -1
-position = Vector2(313, 181)
-texture = ExtResource("2_tatpp")
-hframes = 16
-vframes = 4
-
-[node name="BgExtended" type="Sprite2D" parent="."]
-z_index = -4
-scale = Vector2(2, 2)
-texture = ExtResource("3_3cgj4")
-centered = false
