@@ -38,7 +38,7 @@ var grapple_path: Path2D = null
 var grapple_path_follower: PathFollow2D = null
 var eating: bool = false
 var prev_vel = Vector2.ZERO
-var health = 20
+var health = 3
 var invulnerable: bool = false
 
 # currently retracting tongue
@@ -107,12 +107,11 @@ func _physics_process(delta: float) -> void:
 	animate()
 	
 	# Better ways to do this; I'm too tired to care
-	#$TonguePath.visible = state in [STATE.ATTACK, STATE.GRAPPLE]
+	tongue_root.visible = state in [STATE.ATTACK, STATE.GRAPPLE]
 	var rotation = -tongue_root.global_rotation
 	if not on_wall():
 		rotation = 0
 	tongue_line.set_point_position(0, ((mum_tongue.global_position - global_position) * anim.scale).rotated(rotation))
-	print(tongue_root.global_rotation_degrees)
 	#tongue_line.set_point_position(1, (tongue_attack_origin.global_position - global_position) * anim.scale)
 	
 	# Last
@@ -275,8 +274,8 @@ func attack_state(delta: float) -> void:
 	tongue_attack.visible = true
 	
 	# Add the gravity.
-	#if get_surface() != SURFACE.FLOOR:
-	#	velocity.y += GRAVITY * delta
+	if get_surface() == SURFACE.AIR:
+		velocity.y += GRAVITY * delta
 	
 	# Handle jump.
 	# No need to jump while attacking, I figure?
@@ -299,7 +298,6 @@ func attack_state(delta: float) -> void:
 func climb_state(_delta: float) -> void:
 	var surf = get_surface()
 	
-	
 	# moves the tongue 45 degrees up
 	if looking_up():
 		if surf == SURFACE.RIGHT:
@@ -320,10 +318,14 @@ func climb_state(_delta: float) -> void:
 	
 	if (not is_climbing()) or empty_stamina:
 		if prev_state == STATE.HIT:
+			anim.global_rotation_degrees = 0
+			tongue_root.rotation_degrees = 0
 			prev_state = STATE.CLIMB
 			state = STATE.HIT
 		else:
 			prev_state = state
+			anim.global_rotation_degrees = 0
+			tongue_root.rotation_degrees = 0
 			state = STATE.NORMAL
 		flip_vert(1)
 		return
@@ -375,9 +377,9 @@ func climb_state(_delta: float) -> void:
 	if direction:
 		velocity = direction * CLIMB_SPEED
 		if surf == SURFACE.RIGHT and not direction.x < 0:
-			ledge_catch = 1
+			ledge_catch = 5
 		elif surf == SURFACE.LEFT and not direction.x > 0:
-			ledge_catch = -1
+			ledge_catch = -5
 		else:
 			ledge_catch = 0
 	else:
