@@ -19,7 +19,12 @@ signal player_defeated
 @export var SPEED = 300.0
 @export var CLIMB_SPEED = 100.0
 @export var JUMP_VELOCITY = -600.0
+
+# for some reason, when I try to use GRAVITY * delta, it gives me
+# an error, but when I use get_gravity() * delta, there's no error.
+# perhaps this can be discarded since its not used anywhere?
 @onready var GRAVITY = get_gravity().y
+
 @export var KNOCKBACK = -600
 @export var DEACCEL = 300.0
 
@@ -77,6 +82,7 @@ enum SURFACE {
 
 func _physics_process(delta: float) -> void:
 	GRAVITY = get_gravity().y
+	print("Gravity:", get_gravity(), "Velocity:", velocity)
 	if debug:
 		if on_wall():
 			$AnimatedSprite2D.modulate = Color.RED 
@@ -186,10 +192,10 @@ func normal_state(delta: float) -> void:
 		state = STATE.CLIMB
 		return
 		
-	# Add the gravity.
-	if get_surface() != SURFACE.FLOOR:
-		velocity.y += GRAVITY * delta
-	else:
+	# Add the gravity. check if the gravity is pointing upwards, meaning the frog is in water!
+	if get_surface() != SURFACE.FLOOR or sign(get_gravity().y) == -1:
+		velocity += get_gravity() * delta
+	else: # otherwise, the frog is on land
 		ledge_catch = 0
 
 	# Handle jump.
@@ -207,10 +213,23 @@ func normal_state(delta: float) -> void:
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	var direction := Input.get_axis("left", "right")
 	if direction:
-		velocity.x = direction * SPEED
+		if get_gravity().x:
+			# check if direction is opposite of gravity
+			if sign(direction) != sign(get_gravity().x):
+				velocity.x = move_toward(velocity.x, direction * SPEED, DEACCEL * 0.1)
+				
+			else: # otherwise add direction to gravity
+				velocity.x = move_toward(velocity.x, (direction * SPEED) + get_gravity().x, DEACCEL * 0.1)
+		else:
+			velocity.x = direction * SPEED
 	else:
-		velocity.x = move_toward(velocity.x, 0, DEACCEL * deaccel_factor)
-	
+		# if there's gravity in the x direction
+		if (get_gravity().x):
+			# move toward the gravity
+			velocity.x = move_toward(velocity.x, get_gravity().x, DEACCEL * 0.1)
+		else: # otherwise go to 0
+			velocity.x = move_toward(velocity.x, 0, DEACCEL * deaccel_factor)
+
 	flip(velocity.x)
 	move_and_slide()
 
@@ -464,7 +483,7 @@ func hit_state(delta):
 		
 	# Add the gravity.
 	if not is_on_floor():
-		velocity.y += GRAVITY * delta
+		velocity += get_gravity() * delta
 
 	# Handle jump.
 	if Input.is_action_just_pressed("jump") and is_on_floor():
