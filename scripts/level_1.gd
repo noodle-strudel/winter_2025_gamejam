@@ -25,11 +25,6 @@ func _on_mum_player_take_damage(damage) -> void:
 		for i in range(0, damage):
 			health_icons.back().queue_free()
 
-func _on_reset_timer_timeout() -> void:
-	get_tree().paused = false
-	get_tree().reload_current_scene()
-
-
 func _on_mum_player_defeated() -> void:
-	$ResetTimer.start()
-	get_tree().paused = true
+	#await get_tree().create_timer(1).timeout
+	SceneChange.reload()
