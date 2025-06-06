@@ -82,7 +82,7 @@ enum SURFACE {
 
 func _physics_process(delta: float) -> void:
 	GRAVITY = get_gravity().y
-	print("Gravity:", get_gravity(), "Velocity:", velocity)
+	#print("Gravity:", get_gravity(), "Velocity:", velocity)
 	if debug:
 		if on_wall():
 			$AnimatedSprite2D.modulate = Color.RED 
