@@ -23,7 +23,12 @@ signal player_defeated
 # for some reason, when I try to use GRAVITY * delta, it gives me
 # an error, but when I use get_gravity() * delta, there's no error.
 # perhaps this can be discarded since its not used anywhere?
-@onready var GRAVITY = get_gravity().y
+@onready var GRAVITY = get_gravity()
+
+# this is here for comparisons, when checking if the gravity
+# has shifted (ie. if the frog has just entered or exited
+# flowing water that uses the gravity x-axis)
+@onready var PREV_GRAVITY = GRAVITY
 
 @export var KNOCKBACK = -600
 @export var DEACCEL = 300.0
@@ -56,8 +61,14 @@ var ledge_catch = 0
 
 var deaccel_factor = 1.0
 
-var time = 0	
-	
+var time = 0
+
+# for use when the player is to retain x-axis gravity from water
+# or other modifying materials, set to false when landed
+var is_flung = false
+# stores the strength of the flinging the frog endures
+var flung_acceleration = 0.0
+
 # Possible states for the player
 enum STATE {
 	NORMAL,  # Walk and Jump State
@@ -81,7 +92,16 @@ enum SURFACE {
 @export_range(0, 5, 1, "suffix:state") var state = STATE.NORMAL
 
 func _physics_process(delta: float) -> void:
-	GRAVITY = get_gravity().y
+	GRAVITY = get_gravity()
+	
+	# checking if GRAVITY's x-axis is ZERO when PREV_GRAVITY was NOT
+	# and if velocity's y-axis is greater than 0
+	if (GRAVITY.x == 0 and PREV_GRAVITY.x != 0) and (velocity.y < 0):
+		# if so, the frog is flung into the air (like by the water)
+		is_flung = true
+		# storing the acceleration of the previous gravity's x-axis for the fling
+		flung_acceleration = PREV_GRAVITY.x
+	
 	#print("Gravity:", get_gravity(), "Velocity:", velocity)
 	if debug:
 		if on_wall():
@@ -117,6 +137,14 @@ func _physics_process(delta: float) -> void:
 	# Last
 	prev_vel = velocity
 	prev_surface = get_surface()
+	PREV_GRAVITY = GRAVITY
+	
+	# if the frog hits a surface that isn't air, then stop the flinging
+	# or if the frog hits a direction
+	if (prev_surface != SURFACE.AIR) or (Input.is_action_pressed("left") or Input.is_action_pressed("right")):
+		is_flung = false
+		flung_acceleration = 0.0
+		
 	for i in get_slide_collision_count():
 		var collision = get_slide_collision(i)
 	
@@ -227,6 +255,8 @@ func normal_state(delta: float) -> void:
 		if (get_gravity().x):
 			# move toward the gravity
 			velocity.x = move_toward(velocity.x, get_gravity().x, DEACCEL * 0.1)
+		elif (is_flung):
+			velocity.x = move_toward(velocity.x, flung_acceleration, DEACCEL * 0.1)
 		else: # otherwise go to 0
 			velocity.x = move_toward(velocity.x, 0, DEACCEL * deaccel_factor)
 
@@ -275,7 +305,7 @@ func attack_state(delta: float) -> void:
 	
 	# Add the gravity.
 	if get_surface() == SURFACE.AIR:
-		velocity.y += GRAVITY * delta
+		velocity += GRAVITY * delta
 	
 	# Handle jump.
 	# No need to jump while attacking, I figure?
@@ -411,7 +441,7 @@ func climb_state(_delta: float) -> void:
 	move_and_slide()
 	
 
-# Manages stamina and stanima bar
+# Manages stamina and stamina bar
 func manage_stamina():
 	if state == STATE.CLIMB:
 		if not debug_stamina:
